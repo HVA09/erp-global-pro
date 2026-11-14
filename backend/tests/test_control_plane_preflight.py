@@ -111,6 +111,33 @@ class ControlPlanePreflightTests(unittest.TestCase):
     def _connect(self):
         return sqlite3.connect(self.db_path)
 
+    def test_actual_erp_schema_migrated_to_v8_passes_preflight(self):
+        from erp.migrations import apply_migrations
+
+        actual_path = Path(self.temp.name) / "actual-erp-v8.sqlite3"
+        conn = sqlite3.connect(actual_path)
+        conn.execute("PRAGMA foreign_keys=ON")
+        conn.executescript((ROOT / "erp" / "schema.sql").read_text(encoding="utf-8"))
+        conn.execute("INSERT INTO schema_version(version) VALUES(1)")
+        conn.execute(
+            "INSERT INTO roles(name,label,permissions,is_system) VALUES(?,?,?,?)",
+            ("admin", "Administrator", '["*"]', 1),
+        )
+        conn.execute(
+            "INSERT INTO users(email,name,password_hash,role,is_active) VALUES(?,?,?,?,?)",
+            ("owner@example.test", "Owner", valid_hash(), "admin", 1),
+        )
+        conn.commit()
+        self.assertEqual(apply_migrations(conn), 8)
+        conn.close()
+
+        report = PREFLIGHT.build_report(actual_path)
+        self.assertEqual(report["schema_version"], 8)
+        self.assertEqual(report["summary"]["users"], 1)
+        self.assertEqual(report["summary"]["companies"], 1)
+        self.assertEqual(report["summary"]["company_memberships"], 1)
+        self.assertTrue(report["summary"]["ready_for_control_plane_import"], report["blockers"])
+
     def test_clean_database_is_ready_and_sensitive_values_are_not_returned(self):
         report = PREFLIGHT.build_report(self.db_path)
         self.assertTrue(report["read_only"])
