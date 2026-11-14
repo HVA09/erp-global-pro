@@ -1,6 +1,6 @@
 # ERP Global Pro — سجل الاستمرارية الرئيسي
 
-**آخر تحديث:** 14 نوفمبر 2026 — Stage 25B: اعتماد مصدر الحقيقة PostgreSQL وعقد ترحيل control plane
+**آخر تحديث:** 14 نوفمبر 2026 — Stage 25B: أداة preflight للقراءة فقط واختباراتها مضافة؛ تحقق CI قيد الانتظار
 **آخر مخطط:** SQLite v8؛ لم يتغير في Stage 25A
 **آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip`
 **نقطة الاستئناف التالية:** Stage 25C — بناء preflight للبيانات وcontrol-plane schema/migration runner على PostgreSQL 16 disposable، ثم اختبار ETL ومطابقة البيانات قبل تصميم خدمة المصادقة التنفيذية.
@@ -348,4 +348,6 @@ Stage 23 سحبت جميع امتيازات دور التطبيق على `compan
 - لا تغيير لـSQLite v8 أو قاعدة إنتاج أو إعدادات تشغيل.
 - `TENANT_DATA_SCOPING_ENABLED=False` ما زالت إلزامية.
 
-**نقطة الاستئناف:** Stage25C — تنفيذ preflight ومخطط control-plane ومشغل migration تجريبي على PostgreSQL 16 disposable، مع اختبارات rollback وreconciliation.
+**الحالة التنفيذية:** أضيف `backend/scripts/control_plane_preflight.py` لقراءة SQLite v8 دون تعديل، مع اختبارات في `backend/tests/test_control_plane_preflight.py`. لا تعتبر الخطوة مقبولة حتى نجاح CI ومراجعة نتائجه.
+
+**نقطة الاستئناف:** Stage25C — إكمال preflight على نسخة SQLite v8 مستعادة، ثم بناء control-plane schema ومشغل migration تجريبي على PostgreSQL 16 disposable مع اختبارات rollback وreconciliation.
