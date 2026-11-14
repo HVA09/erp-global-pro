@@ -1,0 +1,14 @@
+Offline SQLAlchemy Core probe (local, no database connection)
+
+Installed version: SQLAlchemy 2.0.50
+Input statement:
+  text("SELECT id, name FROM users WHERE id=:id AND company_id=:company_id")
+PostgreSQL dialect compilation:
+  SELECT id, name FROM users WHERE id=%(id)s AND company_id=%(company_id)s
+Compiled bind parameters:
+  {'id': None, 'company_id': None}
+
+Interpretation:
+- SQLAlchemy Core text() produces named bind parameters, which would require a query/API migration from the app's positional tuple/qmark convention.
+- SQLAlchemy Connection.exec_driver_sql() instead forwards the driver's native paramstyle; it does not independently normalize all SQLite SQL syntax for PostgreSQL.
+- This is a compilation-only comparison, not evidence of runtime compatibility.

@@ -1,0 +1,24 @@
+ERP Global Pro — Stage 16 Final Validation
+Date: 2026-11-13
+
+Focused test suites (run from backend/):
+- python -m unittest discover -s tests -p 'test_tenant*.py' -v
+  Result: 155 tests passed.
+- python -m unittest tests.test_tenant_stage16_backup_bundle -v
+  Result: 16 tests passed.
+- python -m unittest tests.test_tenant_stage15_file_storage -v
+  Result: 28 tests passed.
+- python -m compileall -q .
+  Result: PASS.
+- node --check for every frontend/**/*.js file
+  Result: 19/19 PASS.
+
+Stage 16 coverage: SQLite v8 migration, fail-closed scan states, per-company quota and per-user/company hourly upload limit, private UI/API, ClamAV wrapper with fake clean/infected scanner, hash validation before and after scan and on each download, quarantine symlink rejection, backup/restore bundles, manifest and SHA-256 checks, ZIP traversal/symlink/directory entry rejection, restore marker/recovery, rollback and safe path checks.
+
+Environment limitations:
+- Flask is not installed in this offline build environment; actual HTTP/API integration, app startup, and browser E2E tests were not run. Some API test coverage uses narrowly scoped Flask-compatible test stubs.
+- ClamAV is not installed; scanner behavior was tested with controlled fake executables.
+- PostgreSQL, composite foreign keys, and RLS are not implemented or tested.
+- No live or production database was accessed. No deployment or GitHub upload was performed.
+- Backup ZIP is not encrypted or digitally signed. Store it only on access-controlled encrypted storage.
+- TENANT_DATA_SCOPING_ENABLED remains False. Do not use this as a production multi-company release.

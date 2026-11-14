@@ -1,0 +1,4 @@
+# Optional PostgreSQL driver and pool for Stage 21–23 adapter/integration work.
+# Do not enable this as the application backend until PostgreSQL migrations,
+# composite tenant constraints, RLS and all release gates have passed.
+psycopg[binary,pool]>=3.3,<4

@@ -1,0 +1,9 @@
+setUpClass (tests.test_postgres_psycopg_adapter_integration.Psycopg3LivePostgresIntegrationTests) ... skipped 'ERP_TEST_POSTGRES_ADMIN_DSN is not configured'
+setUpClass (tests.test_postgres_signed_tenant_context_integration.SignedTenantContextPostgresIntegrationTests) ... skipped 'ERP_TEST_POSTGRES_ADMIN_DSN is not configured'
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.000s
+
+OK (skipped=2)
+
+Exit code: 0

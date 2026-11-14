@@ -1,0 +1,40 @@
+ERP Global Pro — Stage 12 Validation
+Date: 2026-11-13
+
+Focused tenant suite:
+  Command: python -m unittest discover -s backend/tests -p 'test_tenant*.py' -v
+  Result: PASS — 88 tests
+  Stage 12 tests added: 18
+
+Python:
+  Command: python -m compileall -q backend
+  Result: PASS
+
+JavaScript:
+  node --check on all frontend/**/*.js
+  Result: PASS — 19 files
+
+Syntax:
+  backend/erp/services/hr.py: PASS
+  backend/erp/services/manufacturing.py: PASS
+  backend/erp/api/hr.py: PASS
+  backend/erp/api/ops.py: PASS
+
+Database:
+  LATEST_VERSION = 6 (Stage 12 adds no schema migration)
+  No production database was supplied or modified.
+
+Not run:
+  Flask/HTTP integration tests (Flask package unavailable in this environment).
+  Browser/E2E tests.
+  PostgreSQL/RLS tests.
+  Concurrency/load tests.
+  Production database preflight or migration.
+
+Safety:
+  Multi-company operational gate remains disabled.
+  CRM, maintenance and project-summary endpoints in api/ops.py remain outside Stage 12 scope.
+  No GitHub repository created and no push performed.
+  No production deployment or database change.
+  Original archive SHA-256 remains:
+  7943d5f5b1f027463a9ef2bd65116286ad76abdcde7db2e90bcedb4434e9895b

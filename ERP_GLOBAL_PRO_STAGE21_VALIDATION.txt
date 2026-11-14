@@ -1,0 +1,27 @@
+ERP Global Pro — Stage 21 Validation
+Date: 2026-11-14
+
+PostgreSQL Psycopg 3 adapter spike tests: 32/32 PASS
+SQLite adapter contract tests: 10/10 PASS
+PostgreSQL compatibility preflight tests: 6/6 PASS
+Combined selected test count: 48/48 PASS
+
+SQLAlchemy Core offline compile probe:
+- Local SQLAlchemy version: 2.0.50
+- text() named-bind statement compiled with PostgreSQL dialect to %(id)s / %(company_id)s.
+- Compile-only; no SQLAlchemy database connection was made.
+
+Python compileall: PASS
+Frontend JavaScript syntax: 19/19 PASS
+GitHub Actions YAML syntax parse: PASS
+PostgreSQL compatibility preflight: generated successfully; 50 operational source files scanned; SQLite schema version 8.
+
+Not executed:
+- Real Psycopg driver (not installed)
+- Real PostgreSQL server / connection / transaction integration
+- PostgreSQL migrations, composite FKs, RLS or pool context leakage tests
+- Flask / HTTP / Browser E2E integration (Flask/Werkzeug not installed)
+- Full backend unittest discovery (test_erp import requires Flask)
+- Production deployment or GitHub push
+
+Important: all Stage 21 PostgreSQL cursor/connection tests use fake DB-API objects. They validate the prototype's contract and SQL translator, not a live PostgreSQL server. Stage 21 prototype is not enabled in application configuration.

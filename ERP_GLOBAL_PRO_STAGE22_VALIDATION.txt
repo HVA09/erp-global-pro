@@ -1,0 +1,34 @@
+ERP Global Pro — Stage 22 Validation
+Date: 2026-11-14
+
+Stage 21 focused regression tests, rerun in Stage 22 worktree:
+- Psycopg 3 adapter fake DB-API prototype: 32/32 PASS
+- SQLite adapter contract: 10/10 PASS
+- PostgreSQL compatibility preflight unit tests: 6/6 PASS
+- Combined focused regression total: 48/48 PASS
+
+Stage 22 live PostgreSQL integration:
+- 11 live integration tests authored.
+- NOT RUN LOCALLY: psycopg / psycopg_pool are not installed; no PostgreSQL server, Docker or Podman is available in this build environment.
+- Running the integration module without ERP_TEST_POSTGRES_ADMIN_DSN reports one explicit class-level skip. This is NOT a live test pass.
+- The GitHub Actions job `postgres-adapter-integration` provisions PostgreSQL 16, installs base Flask requirements plus optional Psycopg 3/pool dependencies, requires a successful DB connection, and then runs all 11 live tests on Python 3.11 and 3.12.
+- REQUIRE_POSTGRES_INTEGRATION=1 ensures the CI job fails if DSN, Psycopg/pool or the server is missing. The workflow itself has not yet executed because ERP has not been pushed to a GitHub repository.
+
+Other local checks:
+- Python compileall: PASS
+- Frontend JavaScript syntax: 19/19 PASS
+- GitHub Actions workflow YAML parse: PASS
+- PostgreSQL compatibility preflight inventory: generated successfully
+- PostgreSQL required-environment guard: returned expected failure code 2 because no DSN is configured
+- No GitHub repository was created or modified.
+- No production database, hosted service or deployment was changed.
+
+Important limitations:
+- Psycopg3Adapter remains a prototype not wired into app configuration.
+- The RLS suite tests a disposable sample schema, not the ERP production schema.
+- No complete PostgreSQL schema/migrations, composite tenant FKs, or application-wide RLS have been implemented.
+- Transaction-local custom GUC `app.company_id` is not, by itself, an authentication boundary against SQL injection or an application DB role able to set arbitrary custom GUC values.
+- SQLite v8 remains the only connected application backend.
+- TENANT_DATA_SCOPING_ENABLED remains False.
+
+Release classification: Stage 22 adds a real-PostgreSQL CI test harness. It is not proof that live PostgreSQL tests passed, not a production backend, and not approved for multi-company production use.

@@ -1,0 +1,36 @@
+ERP Global Pro — Stage 23 validation report
+Date: 2026-11-14
+Classification: local focused tests + static checks; PostgreSQL runtime not available here.
+
+LOCAL TESTS (WORKTREE AND EXTRACTED RELEASE ZIP)
+- Stage 21/22 focused regression (Psycopg DB-API prototype, SQLite adapter contract, PostgreSQL static preflight): 48/48 PASS.
+- Stage 23 signed claims unit tests: 12/12 PASS.
+- Stage 23 PostgreSQL SQL template/design tests: 14/14 PASS.
+- Total locally executed focused tests: 74/74 PASS.
+- The same 74 focused tests were rerun successfully from the extracted release ZIP: 74/74 PASS.
+- Python compileall: PASS.
+- Frontend JavaScript syntax: 19/19 PASS.
+- GitHub Actions YAML parse and PostgreSQL test wiring: PASS.
+
+POSTGRESQL LIVE TESTS — NOT RUN
+- Stage 22 Psycopg/PostgreSQL integration suite: 11 live tests, NOT RUN.
+- Stage 23 signed-tenant/RLS integration suite: 12 live tests, NOT RUN.
+- Total live PostgreSQL tests prepared for CI: 23, NOT RUN locally or remotely.
+- Local unittest discovery explicitly skipped both test classes because ERP_TEST_POSTGRES_ADMIN_DSN is not configured.
+- Environment has no PostgreSQL server, psycopg/psycopg_pool runtime, Docker or Podman.
+- GitHub Actions job is configured with PostgreSQL 16, Python 3.11/3.12, and REQUIRE_POSTGRES_INTEGRATION=1; it has NOT run because the ERP repository has not been created/uploaded.
+- No live PostgreSQL SQL syntax/runtime success is claimed by this report.
+
+STATIC / PACKAGE CHECKS
+- PostgreSQL compatibility preflight generated; static inventory only, not a database test.
+- Release ZIP extracted successfully.
+- Internal SHA-256 manifest: 208/208 entries matched after extraction.
+- Python and JavaScript/YAML checks rerun from the extracted release ZIP.
+- ZIP does not contain .env, local database files, PEM files, or private key files.
+
+SECURITY / RELEASE STATUS
+- Stage 23 signed tenant context is a prototype and is not wired to Flask auth/JWT or the current database adapter.
+- SQL template has not been applied to an ERP database or validated by a real PostgreSQL server.
+- SQLite v8 remains the only application database.
+- TENANT_DATA_SCOPING_ENABLED remains False.
+- No production database, deployment, or GitHub repository was modified.

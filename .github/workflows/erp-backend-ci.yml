@@ -1,0 +1,141 @@
+name: ERP backend quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-tests:
+    name: Backend tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Verify real HTTP dependencies are present
+        run: python scripts/require_http_dependencies.py
+
+      - name: Run PostgreSQL adapter prototype unit tests (fake DB-API; no server)
+        run: python -m unittest tests.test_postgres_psycopg_adapter_spike -v
+
+      - name: Run complete backend test suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Run real Flask HTTP integration tests (no skips allowed)
+        run: python scripts/run_http_tests.py
+
+      - name: Compile Python modules
+        run: python -m compileall -q erp tests scripts manage.py run.py
+
+      - name: Check frontend JavaScript syntax
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do node --check "$file"; done < <(find frontend -type f -name '*.js' -print0)
+
+      - name: Generate PostgreSQL compatibility inventory (informational)
+        if: always()
+        run: |
+          mkdir -p artifacts
+          python scripts/postgres_compat_preflight.py --output artifacts/postgres-compat-preflight.json
+
+      - name: Upload PostgreSQL compatibility inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-compatibility-preflight-${{ matrix.python-version }}
+          path: backend/artifacts/postgres-compat-preflight.json
+          if-no-files-found: ignore
+
+  postgres-adapter-integration:
+    name: Live PostgreSQL adapter (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: erp_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d erp_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      ERP_TEST_POSTGRES_ADMIN_DSN: postgresql://postgres:postgres@localhost:5432/erp_ci
+      REQUIRE_POSTGRES_INTEGRATION: '1'
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-postgres.txt
+
+      - name: Install backend and optional PostgreSQL dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-postgres.txt
+
+      - name: Require live PostgreSQL service and driver
+        run: python scripts/require_postgres_integration.py
+
+      - name: Run live Psycopg 3 and PostgreSQL RLS integration tests
+        run: python -m unittest tests.test_postgres_psycopg_adapter_integration tests.test_postgres_signed_tenant_context_integration -v
+
+      - name: Compile PostgreSQL adapters and integration tests
+        run: python -m compileall -q erp/db_adapters tests/test_postgres_psycopg_adapter_integration.py tests/test_postgres_signed_tenant_context_integration.py tests/test_signed_tenant_claims.py tests/test_postgres_signed_tenant_context_design.py scripts/require_postgres_integration.py

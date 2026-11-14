@@ -1,0 +1,30 @@
+ERP Global Pro — Stage 9 Validation Record
+Date: 2026-11-13
+
+Focused tests:
+  Command: python -m unittest discover -s tests -p 'test_tenant_*.py'
+  Result: 52 tests, PASS.
+  Scope includes tenant CRUD, migrations v2-v5, ownership, relationship guards,
+  uniqueness preflight, Stage 9 service scoping, company settings, inventory,
+  stock counts, accounting reports/posting, and sequence fail-closed behavior.
+
+Static checks:
+  python -m compileall -q backend: PASS.
+  Frontend JavaScript node --check: 19/19 PASS.
+  ZIP archive integrity: PASS (verified after packaging).
+  SHA-256 manifest: all entries verified after packaging.
+
+Not run / unavailable:
+  Full Flask test suite and HTTP API tests: Flask is not installed in this environment.
+  Browser E2E: not run.
+  PostgreSQL migration, composite FKs and RLS: not implemented / not run.
+  Real restored production-database uniqueness preflight: not run (no production backup supplied).
+  Production deployment/database changes: none.
+
+Release controls:
+  SQLite schema version: 5.
+  TENANT_DATA_SCOPING_ENABLED remains False.
+  The application and SQLite write guards continue blocking multi-company operation.
+  Sequences still have a global primary key; service rejects cross-company reuse.
+  This checkpoint is not approved for multi-company production use.
+  No GitHub repository was created and no files were uploaded to GitHub.

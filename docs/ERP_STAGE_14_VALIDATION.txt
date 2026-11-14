@@ -1,0 +1,29 @@
+ERP Global Pro — Stage 14 Validation
+Date: 2026-11-13
+Base checkpoint: Stage 13
+SQLite schema: v6 (no migration added)
+
+Focused tenancy test suite:
+  python -m unittest discover -s backend/tests -p 'test_tenant*.py'
+  Result: 111/111 PASS
+
+New Stage 14 tests: 15/15 PASS
+Python compileall: PASS
+JavaScript node --check: 19/19 PASS
+Archive extraction: PASS
+Internal CHECKSUMS.sha256: 125/125 files PASS
+Validation suite rerun after extracting the final ZIP: 111/111 PASS
+All export queries: executed against two-company SQLite fixture; no foreign-company rows returned
+Partner/product import: cross-company same-name/SKU tests PASS
+Audit list: cross-company and NULL-company rows hidden PASS
+Backup/demo/global-role/global-identity guards: multi-company denial PASS
+System info: global db-size/demo eligibility hidden for multiple companies PASS
+
+Flask HTTP/integration/E2E: NOT RUN (Flask not installed in offline validation environment)
+PostgreSQL/composite FK/RLS: NOT RUN / NOT IMPLEMENTED
+Load/concurrency tests: NOT RUN
+Production database: NOT accessed or modified
+GitHub repository/push: NOT performed
+TENANT_DATA_SCOPING_ENABLED: False (must remain disabled)
+Original archive SHA-256 unchanged:
+7943d5f5b1f027463a9ef2bd65116286ad76abdcde7db2e90bcedb4434e9895b

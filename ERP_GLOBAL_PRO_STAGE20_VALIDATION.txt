@@ -1,0 +1,34 @@
+ERP Global Pro — Stage 20 validation
+
+Source baseline: Stage 18 ZIP, with recovered Stage 19 PostgreSQL audit and Stage 20 adapter-contract implementation.
+SQLite schema version: 8 (unchanged).
+
+Combined focused test execution:
+- Total selected test cases: 197
+- Passed: 186
+- Skipped: 11 (real Flask HTTP test cases; Flask/Werkzeug unavailable)
+- Failures: 0
+- Errors: 0
+
+Breakdown:
+- Tenant isolation suite: 155/155 PASS
+- Stage 19 PostgreSQL compatibility preflight: 6/6 PASS
+- Stage 20 SQLite adapter contract: 10/10 PASS
+- Stage 18 CI readiness: 4/4 PASS
+- Stage 17 readiness: 22 total; 11 PASS + 11 HTTP SKIPPED
+
+Static checks:
+- Python compileall: PASS
+- Frontend JavaScript syntax: 19/19 PASS
+- PostgreSQL preflight inventory generated: 49 operational files; schema v8; 865 raw '?' characters in Python. This is a lexical character count, not a confirmed parameter count.
+- ZIP extraction/retest: repeated in a separate verification directory.
+
+Not run / unavailable:
+- Full backend unittest discovery: blocked at test_erp.py import because Flask is unavailable in this build environment.
+- Real Flask HTTP integration: NOT RUN (11 cases remain skipped locally).
+- Browser E2E: NOT RUN.
+- PostgreSQL server/driver/migrations: NOT RUN; no postgres/psql/docker/podman or psycopg available.
+- RLS and pooled-connection tenant-context leakage tests: NOT RUN.
+- Real ClamAV scan: NOT RUN.
+
+Release gate remains closed. TENANT_DATA_SCOPING_ENABLED=False.

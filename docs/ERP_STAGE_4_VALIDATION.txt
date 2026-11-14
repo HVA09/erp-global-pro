@@ -1,0 +1,35 @@
+ERP Global Pro Stage 4 Reconciled — validation record
+Date: 2026-11-13
+
+Focused tests (run from backend/):
+  python -m unittest tests.test_tenant_migrations tests.test_tenancy_service tests.test_tenant_ownership_migration tests.test_tenant_relationship_migration -v
+  Result: PASS — 21 tests, 0 failures, 0 errors.
+
+Stage 4 migration object checks:
+  Tenant-to-tenant FK relationship groups: 55
+  INSERT/UPDATE relationship guards: 110
+  Relationship indexes: 55
+  Additional audit_log(company_id, ts) index: 1
+  Total Stage 4 indexes: 56
+  Existing cross-company FK preflight: tested; mismatch aborts and rolls back.
+  Cross-company insert/update attempts: tested; rejected by database triggers.
+  Same-company reference: tested; accepted.
+  Migration idempotency: tested; passed.
+
+The three Stage 3 tests that assert version 3 now pin target_version=3 explicitly. This was necessary because the recovered migration module's latest version is 4.
+
+Python compile check:
+  PASS — `python -m compileall -q backend`.
+
+Frontend JavaScript syntax:
+  PASS — `node --check` for every `frontend/**/*.js` file (19 files).
+
+Not run:
+  Full Flask backend suite — Flask is not installed in the current environment.
+  Browser/E2E tests.
+  PostgreSQL/RLS tests (not implemented).
+  Production database migration / backup-restore rehearsal.
+
+Release gate:
+  TENANT_DATA_SCOPING_ENABLED remains False.
+  Stage 4 does not authorize multi-company production use.

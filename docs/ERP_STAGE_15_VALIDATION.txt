@@ -1,0 +1,31 @@
+ERP Global Pro — Stage 15 Validation
+
+SQLite schema: v7
+Tenant-focused suite (all test_tenant*.py): 127/127 PASS
+Stage 15 new tests: 16/16 PASS
+Python compileall: PASS
+JavaScript syntax checks: 19/19 PASS
+Full schema migration through v7: PASS
+Migration v7 idempotency and foreign_key_check: PASS
+Private file storage / API-handler stubs: PASS
+- Two-company metadata separation
+- Foreign-company read/download/delete denied as 404
+- Client company_id rejected on upload
+- Legacy document metadata links accept HTTP/HTTPS only
+- Path traversal, HTML/SVG and signature mismatch rejected
+- File size 10 MiB enforced
+- Download forced as attachment with no-store/nosniff headers
+- SHA-256 integrity detects missing/tampered content
+- Storage root inside frontend rejected
+
+Not run / not implemented:
+- Full Flask/HTTP integration and browser E2E (Flask not installed in this offline environment)
+- Malware/ClamAV scanning (not implemented)
+- UI integration for attachment management (not implemented)
+- Tenant quotas and upload rate limits (not implemented)
+- DB + external files archive/restore (not implemented; DB-only backup/restore fail closed when files exist)
+- PostgreSQL, composite FKs, RLS, pool/session leakage and load tests
+- Production migration, deployment or GitHub push
+
+TENANT_DATA_SCOPING_ENABLED=False (unchanged)
+Original archive untouched.

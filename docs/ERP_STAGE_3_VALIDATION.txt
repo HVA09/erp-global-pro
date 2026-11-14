@@ -1,0 +1,33 @@
+ERP Global Pro Stage 3 (rebuilt from archived Stage 2) validation record
+Date: 2026-11-13
+
+Focused Python unit tests:
+  Command (from backend/):
+    python -m unittest tests.test_tenant_migrations tests.test_tenancy_service tests.test_tenant_ownership_migration -v
+  Result: PASS, 16 tests, 0 failures, 0 errors.
+
+Python syntax:
+  Command (project root): python -m compileall -q backend
+  Result: PASS.
+
+Frontend JavaScript syntax:
+  Command: node --check for each frontend/**/*.js file
+  Result: PASS, 19 files checked.
+
+SQLite migration/schema verification (isolated in-memory database):
+  Result:
+    - 46 application tables after migrations.
+    - All 40 tenant-owned business tables have company_id.
+    - PRAGMA integrity_check: ok.
+    - PRAGMA foreign_key_check: 0 violations.
+  This is a synthetic baseline-schema rehearsal, not a production database migration.
+
+Not executed:
+  - Full Flask backend suite: Flask is not installed in the current execution environment.
+  - Flask route/integration tests and browser/E2E: not executed.
+  - PostgreSQL/RLS: not implemented in this stage.
+  - Production migration rehearsal: no production database was accessed or changed.
+
+Release gate:
+  TENANT_DATA_SCOPING_ENABLED must remain False.
+  Do not deploy this package for multi-company use.

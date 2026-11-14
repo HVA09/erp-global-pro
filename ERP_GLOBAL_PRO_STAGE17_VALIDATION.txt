@@ -1,0 +1,34 @@
+ERP Global Pro — Stage 17 Validation
+Date: 2026-11-13
+
+Executed from backend/:
+- python -m unittest discover -s tests -p 'test_tenant*.py' -v
+  Result: 155 tests passed.
+- python -m unittest tests.test_tenant_stage16_backup_bundle tests.test_tenant_stage15_file_storage -v
+  Result: 44 tests passed (repeat confirmation; these are included in the 155-test tenant suite above).
+- python -m unittest tests.test_stage17_http_readiness -v
+  Result: 16 tests discovered; 11 passed and 5 skipped.
+- python -m compileall -q .
+  Result: PASS.
+- node --check for every frontend/**/*.js file
+  Result: 19/19 PASS.
+
+Five skipped tests are real Flask test-client scenarios for authentication/company switching, cross-company attachment IDOR, client-supplied company_id, maintenance mode, and interrupted-restore startup. They are skipped because Flask and Werkzeug are unavailable; no real HTTP request or browser E2E test ran.
+
+Runtime preflight:
+- Status: BLOCKED.
+- Missing required dependencies: Flask and Werkzeug.
+- pip installation was attempted but could not resolve the package index DNS.
+- ClamAV and gunicorn are unavailable in this build environment.
+- Storage path separation, symlink path check, production-secret shape checks, and maintenance-mode checks passed for this development environment.
+
+Not tested:
+- Real WSGI/HTTP runtime or browser E2E.
+- Real ClamAV scanner/signature database.
+- PostgreSQL, composite foreign keys, RLS, session/pool leakage, load/concurrency.
+- Production backup storage encryption/signing or production restore.
+
+Safety:
+- TENANT_DATA_SCOPING_ENABLED remains False.
+- No production database, deployment, or GitHub repository was modified.
+- Original ERP archive remained unchanged.

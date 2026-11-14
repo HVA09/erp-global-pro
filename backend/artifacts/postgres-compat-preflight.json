@@ -1,0 +1,1018 @@
+{
+  "project": "ERP Global Pro",
+  "classification": "static source inventory; not a PostgreSQL runtime test",
+  "database_schema_version": 8,
+  "operational_source_files_scanned": 49,
+  "python_source_files_scanned": 48,
+  "sqlite_specific_indicators": {
+    "pragma": {
+      "count": 45,
+      "files": [
+        {
+          "file": "erp/db_adapters/sqlite.py",
+          "count": 7,
+          "lines": [
+            {
+              "line": 30,
+              "count": 1
+            },
+            {
+              "line": 31,
+              "count": 1
+            },
+            {
+              "line": 33,
+              "count": 1
+            },
+            {
+              "line": 34,
+              "count": 1
+            },
+            {
+              "line": 69,
+              "count": 1
+            },
+            {
+              "line": 75,
+              "count": 1
+            },
+            {
+              "line": 78,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/migrations/__init__.py",
+          "count": 26,
+          "lines": [
+            {
+              "line": 133,
+              "count": 1
+            },
+            {
+              "line": 159,
+              "count": 1
+            },
+            {
+              "line": 188,
+              "count": 1
+            },
+            {
+              "line": 220,
+              "count": 1
+            },
+            {
+              "line": 234,
+              "count": 1
+            },
+            {
+              "line": 264,
+              "count": 1
+            },
+            {
+              "line": 317,
+              "count": 1
+            },
+            {
+              "line": 335,
+              "count": 1
+            },
+            {
+              "line": 343,
+              "count": 1
+            },
+            {
+              "line": 381,
+              "count": 1
+            },
+            {
+              "line": 391,
+              "count": 1
+            },
+            {
+              "line": 575,
+              "count": 1
+            },
+            {
+              "line": 603,
+              "count": 1
+            },
+            {
+              "line": 659,
+              "count": 1
+            },
+            {
+              "line": 663,
+              "count": 1
+            },
+            {
+              "line": 721,
+              "count": 1
+            },
+            {
+              "line": 727,
+              "count": 1
+            },
+            {
+              "line": 751,
+              "count": 1
+            },
+            {
+              "line": 789,
+              "count": 1
+            },
+            {
+              "line": 796,
+              "count": 1
+            },
+            {
+              "line": 803,
+              "count": 1
+            },
+            {
+              "line": 829,
+              "count": 1
+            },
+            {
+              "line": 851,
+              "count": 1
+            },
+            {
+              "line": 853,
+              "count": 1
+            },
+            {
+              "line": 885,
+              "count": 1
+            },
+            {
+              "line": 895,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/services/backup_bundle.py",
+          "count": 7,
+          "lines": [
+            {
+              "line": 98,
+              "count": 1
+            },
+            {
+              "line": 101,
+              "count": 1
+            },
+            {
+              "line": 123,
+              "count": 1
+            },
+            {
+              "line": 306,
+              "count": 1
+            },
+            {
+              "line": 309,
+              "count": 1
+            },
+            {
+              "line": 328,
+              "count": 1
+            },
+            {
+              "line": 541,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "scripts/tenant_uniqueness_preflight.py",
+          "count": 5,
+          "lines": [
+            {
+              "line": 84,
+              "count": 1
+            },
+            {
+              "line": 86,
+              "count": 1
+            },
+            {
+              "line": 100,
+              "count": 1
+            },
+            {
+              "line": 224,
+              "count": 1
+            },
+            {
+              "line": 225,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "autoincrement": {
+      "count": 42,
+      "files": [
+        {
+          "file": "erp/migrations/__init__.py",
+          "count": 3,
+          "lines": [
+            {
+              "line": 41,
+              "count": 1
+            },
+            {
+              "line": 54,
+              "count": 1
+            },
+            {
+              "line": 765,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/schema.sql",
+          "count": 39,
+          "lines": [
+            {
+              "line": 16,
+              "count": 1
+            },
+            {
+              "line": 27,
+              "count": 1
+            },
+            {
+              "line": 42,
+              "count": 1
+            },
+            {
+              "line": 47,
+              "count": 1
+            },
+            {
+              "line": 52,
+              "count": 1
+            },
+            {
+              "line": 68,
+              "count": 1
+            },
+            {
+              "line": 89,
+              "count": 1
+            },
+            {
+              "line": 113,
+              "count": 1
+            },
+            {
+              "line": 119,
+              "count": 1
+            },
+            {
+              "line": 127,
+              "count": 1
+            },
+            {
+              "line": 138,
+              "count": 1
+            },
+            {
+              "line": 143,
+              "count": 1
+            },
+            {
+              "line": 155,
+              "count": 1
+            },
+            {
+              "line": 182,
+              "count": 1
+            },
+            {
+              "line": 193,
+              "count": 1
+            },
+            {
+              "line": 202,
+              "count": 1
+            },
+            {
+              "line": 225,
+              "count": 1
+            },
+            {
+              "line": 244,
+              "count": 1
+            },
+            {
+              "line": 259,
+              "count": 1
+            },
+            {
+              "line": 269,
+              "count": 1
+            },
+            {
+              "line": 273,
+              "count": 1
+            },
+            {
+              "line": 282,
+              "count": 1
+            },
+            {
+              "line": 289,
+              "count": 1
+            },
+            {
+              "line": 297,
+              "count": 1
+            },
+            {
+              "line": 305,
+              "count": 1
+            },
+            {
+              "line": 315,
+              "count": 1
+            },
+            {
+              "line": 325,
+              "count": 1
+            },
+            {
+              "line": 332,
+              "count": 1
+            },
+            {
+              "line": 340,
+              "count": 1
+            },
+            {
+              "line": 350,
+              "count": 1
+            },
+            {
+              "line": 357,
+              "count": 1
+            },
+            {
+              "line": 365,
+              "count": 1
+            },
+            {
+              "line": 371,
+              "count": 1
+            },
+            {
+              "line": 378,
+              "count": 1
+            },
+            {
+              "line": 384,
+              "count": 1
+            },
+            {
+              "line": 390,
+              "count": 1
+            },
+            {
+              "line": 404,
+              "count": 1
+            },
+            {
+              "line": 411,
+              "count": 1
+            },
+            {
+              "line": 416,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "sqlite_master": {
+      "count": 22,
+      "files": [
+        {
+          "file": "erp/migrations/__init__.py",
+          "count": 18,
+          "lines": [
+            {
+              "line": 124,
+              "count": 1
+            },
+            {
+              "line": 183,
+              "count": 1
+            },
+            {
+              "line": 211,
+              "count": 1
+            },
+            {
+              "line": 301,
+              "count": 1
+            },
+            {
+              "line": 304,
+              "count": 1
+            },
+            {
+              "line": 307,
+              "count": 1
+            },
+            {
+              "line": 330,
+              "count": 1
+            },
+            {
+              "line": 514,
+              "count": 1
+            },
+            {
+              "line": 526,
+              "count": 1
+            },
+            {
+              "line": 530,
+              "count": 1
+            },
+            {
+              "line": 571,
+              "count": 1
+            },
+            {
+              "line": 598,
+              "count": 1
+            },
+            {
+              "line": 645,
+              "count": 1
+            },
+            {
+              "line": 648,
+              "count": 1
+            },
+            {
+              "line": 655,
+              "count": 1
+            },
+            {
+              "line": 668,
+              "count": 1
+            },
+            {
+              "line": 735,
+              "count": 1
+            },
+            {
+              "line": 743,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/services/backup_bundle.py",
+          "count": 2,
+          "lines": [
+            {
+              "line": 113,
+              "count": 1
+            },
+            {
+              "line": 116,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "manage.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 95,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "scripts/tenant_uniqueness_preflight.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 94,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "sqlite3_reference": {
+      "count": 53,
+      "files": [
+        {
+          "file": "erp/api/admin.py",
+          "count": 4,
+          "lines": [
+            {
+              "line": 4,
+              "count": 1
+            },
+            {
+              "line": 275,
+              "count": 1
+            },
+            {
+              "line": 277,
+              "count": 1
+            },
+            {
+              "line": 289,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/config.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 11,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/db_adapters/sqlite.py",
+          "count": 20,
+          "lines": [
+            {
+              "line": 5,
+              "count": 1
+            },
+            {
+              "line": 22,
+              "count": 1
+            },
+            {
+              "line": 23,
+              "count": 1
+            },
+            {
+              "line": 29,
+              "count": 1
+            },
+            {
+              "line": 37,
+              "count": 2
+            },
+            {
+              "line": 40,
+              "count": 2
+            },
+            {
+              "line": 43,
+              "count": 1
+            },
+            {
+              "line": 46,
+              "count": 1
+            },
+            {
+              "line": 49,
+              "count": 1
+            },
+            {
+              "line": 52,
+              "count": 1
+            },
+            {
+              "line": 55,
+              "count": 1
+            },
+            {
+              "line": 58,
+              "count": 1
+            },
+            {
+              "line": 67,
+              "count": 1
+            },
+            {
+              "line": 71,
+              "count": 1
+            },
+            {
+              "line": 74,
+              "count": 1
+            },
+            {
+              "line": 77,
+              "count": 1
+            },
+            {
+              "line": 80,
+              "count": 1
+            },
+            {
+              "line": 86,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/errors.py",
+          "count": 2,
+          "lines": [
+            {
+              "line": 4,
+              "count": 1
+            },
+            {
+              "line": 31,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/services/backup_bundle.py",
+          "count": 14,
+          "lines": [
+            {
+              "line": 14,
+              "count": 1
+            },
+            {
+              "line": 93,
+              "count": 1
+            },
+            {
+              "line": 94,
+              "count": 1
+            },
+            {
+              "line": 109,
+              "count": 1
+            },
+            {
+              "line": 110,
+              "count": 1
+            },
+            {
+              "line": 154,
+              "count": 1
+            },
+            {
+              "line": 194,
+              "count": 1
+            },
+            {
+              "line": 253,
+              "count": 1
+            },
+            {
+              "line": 268,
+              "count": 1
+            },
+            {
+              "line": 303,
+              "count": 1
+            },
+            {
+              "line": 304,
+              "count": 1
+            },
+            {
+              "line": 485,
+              "count": 1
+            },
+            {
+              "line": 493,
+              "count": 1
+            },
+            {
+              "line": 539,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "manage.py",
+          "count": 3,
+          "lines": [
+            {
+              "line": 19,
+              "count": 1
+            },
+            {
+              "line": 80,
+              "count": 1
+            },
+            {
+              "line": 92,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "scripts/runtime_preflight.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 81,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "scripts/tenant_uniqueness_preflight.py",
+          "count": 8,
+          "lines": [
+            {
+              "line": 23,
+              "count": 1
+            },
+            {
+              "line": 79,
+              "count": 1
+            },
+            {
+              "line": 82,
+              "count": 1
+            },
+            {
+              "line": 83,
+              "count": 1
+            },
+            {
+              "line": 92,
+              "count": 1
+            },
+            {
+              "line": 99,
+              "count": 1
+            },
+            {
+              "line": 104,
+              "count": 1
+            },
+            {
+              "line": 346,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "create_trigger": {
+      "count": 10,
+      "files": [
+        {
+          "file": "erp/migrations/__init__.py",
+          "count": 6,
+          "lines": [
+            {
+              "line": 145,
+              "count": 1
+            },
+            {
+              "line": 153,
+              "count": 1
+            },
+            {
+              "line": 166,
+              "count": 1
+            },
+            {
+              "line": 287,
+              "count": 1
+            },
+            {
+              "line": 358,
+              "count": 1
+            },
+            {
+              "line": 364,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/schema.sql",
+          "count": 4,
+          "lines": [
+            {
+              "line": 170,
+              "count": 1
+            },
+            {
+              "line": 172,
+              "count": 1
+            },
+            {
+              "line": 174,
+              "count": 1
+            },
+            {
+              "line": 176,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "lastrowid": {
+      "count": 3,
+      "files": [
+        {
+          "file": "erp/db_adapters/sqlite.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 59,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/migrations/__init__.py",
+          "count": 2,
+          "lines": [
+            {
+              "line": 80,
+              "count": 1
+            },
+            {
+              "line": 113,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "begin_immediate": {
+      "count": 3,
+      "files": [
+        {
+          "file": "erp/db.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 37,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/db_adapters/sqlite.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 47,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/migrations/__init__.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 855,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "insert_or_ignore_replace": {
+      "count": 3,
+      "files": [
+        {
+          "file": "erp/seed.py",
+          "count": 3,
+          "lines": [
+            {
+              "line": 44,
+              "count": 1
+            },
+            {
+              "line": 53,
+              "count": 1
+            },
+            {
+              "line": 56,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "row_factory": {
+      "count": 4,
+      "files": [
+        {
+          "file": "erp/db_adapters/sqlite.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 29,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/services/backup_bundle.py",
+          "count": 2,
+          "lines": [
+            {
+              "line": 110,
+              "count": 1
+            },
+            {
+              "line": 304,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "scripts/tenant_uniqueness_preflight.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 83,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "executescript": {
+      "count": 4,
+      "files": [
+        {
+          "file": "erp/db.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 99,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/db_adapters/protocol.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 27,
+              "count": 1
+            }
+          ]
+        },
+        {
+          "file": "erp/db_adapters/sqlite.py",
+          "count": 2,
+          "lines": [
+            {
+              "line": 43,
+              "count": 1
+            },
+            {
+              "line": 44,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    "sqlite_specific_errors": {
+      "count": 1,
+      "files": [
+        {
+          "file": "erp/errors.py",
+          "count": 1,
+          "lines": [
+            {
+              "line": 31,
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "raw_question_mark_characters_in_python": 865,
+  "raw_question_mark_note": "Lexical character count only. It may include question marks in comments, strings, SQL operators, or non-bind text. Do not mass-replace it.",
+  "postgresql_runtime_tests": 0,
+  "decision": "PostgreSQL is not enabled; implement and test a complete adapter and migrations first."
+}

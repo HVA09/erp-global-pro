@@ -1,0 +1,50 @@
+ERP Global Pro — Stage 18 Validation
+Date: 2026-11-13
+
+Source baseline: erp-global-pro-stage17-http-readiness.zip
+Schema: SQLite v8 (unchanged in Stage 18)
+
+PASS:
+- python -m unittest discover -s tests -p 'test_tenant*.py' -v
+  155 tests passed.
+- python -m unittest tests.test_stage18_ci_readiness -v
+  4/4 passed.
+- python -m unittest tests.test_stage17_http_readiness -v
+  22 discovered: 11 dependency-free readiness tests passed; 11 real Flask HTTP scenarios skipped because Flask/Werkzeug are absent.
+- python -m compileall -q erp tests scripts manage.py run.py
+  PASS.
+- node --check for all frontend/**/*.js
+  19/19 PASS.
+- CI workflow YAML parsed successfully with PyYAML BaseLoader.
+
+BLOCKED / NOT PASSED:
+- python -m pip install Flask Werkzeug
+  FAILED because DNS/package-index resolution is unavailable.
+- python scripts/require_http_dependencies.py
+  Exit 2 as designed: Flask and Werkzeug missing.
+- python scripts/run_http_tests.py
+  Exit 2 as designed: real HTTP test execution is blocked until dependencies are installed.
+- python scripts/runtime_preflight.py
+  BLOCKED: Flask and Werkzeug required packages missing; optional gunicorn and ClamAV scanner also unavailable.
+- Complete unittest discovery:
+  186 tests discovered; 11 skipped; one import error in tests/test_erp.py because Flask is not installed. Full suite is therefore not green in this environment.
+
+Six additional real Flask test-client scenarios were authored but not executed locally:
+1. Non-member cannot switch to another company.
+2. Suspended membership invalidates existing company-bound token.
+3. Operations stay blocked when multi-company flag is false.
+4. Pending attachment download is denied; clean file is served with safe headers.
+5. Attachment SHA-256 mismatch blocks download and changes scan state to error.
+6. CORS preflight is limited to configured origins.
+
+The new GitHub Actions workflow installs requirements, runs the full backend suite, runs the HTTP suite with a no-skips gate, and checks Python/JavaScript syntax on Python 3.11 and 3.12. It has not run because the ERP repository has not been created or pushed.
+
+Not tested:
+- Real HTTP/WSGI execution, browser E2E, real ClamAV engine/signature database.
+- PostgreSQL migration, composite foreign keys, RLS, connection-pool/session tenant leakage, concurrency/load.
+- Production backup encryption/signing, production restore, or live deployment.
+
+Safety:
+- TENANT_DATA_SCOPING_ENABLED remains False.
+- No production database, deployment, or GitHub repository was modified.
+- Original ERP archive remains unchanged.

@@ -1,0 +1,41 @@
+ERP Global Pro — Stage 11 Validation
+Date: 2026-11-13
+
+Focused tenancy test suite:
+  Command: python -m unittest discover -s backend/tests -p 'test_tenant*.py' -v
+  Result: PASS — 70 tests
+  Stage 11 tests added: 14
+
+Python:
+  Command: python -m compileall -q backend
+  Result: PASS
+
+JavaScript:
+  Command: node --check for every frontend/**/*.js file
+  Result: PASS — 19 files
+
+AST:
+  backend/erp/services/trade.py: PASS
+  backend/erp/api/trade.py: PASS
+
+Static SQL audit:
+  Dynamic query fragments in trade.py use a base clause that includes d.company_id=? or pay.company_id=?;
+  standalone SQL statements in trade service and API were reviewed for tenant predicates.
+  Result: PASS with reviewed dynamic pagination query fragments documented.
+
+Database:
+  SQLite migration LATEST_VERSION remains 6 (Stage 11 contains no schema migration).
+  No production database was supplied or modified.
+
+Not run:
+  Flask/HTTP integration tests (Flask package is not installed in this execution environment).
+  Browser/E2E tests.
+  PostgreSQL/RLS tests.
+  Production database preflight or migration.
+
+Safety:
+  TENANT_DATA_SCOPING_ENABLED remains disabled/false.
+  Do not operate multiple real companies or deploy as a multi-tenant release based on Stage 11 alone.
+  No GitHub repository was created and no files were pushed.
+  Original archive SHA-256 remains recorded as:
+  7943d5f5b1f027463a9ef2bd65116286ad76abdcde7db2e90bcedb4434e9895b

@@ -1,0 +1,23 @@
+ERP Global Pro — Stage 8 Callback / Side-effect Audit
+Date: 2026-11-13
+
+Audit:
+  Enumerated all Resource callbacks and traced the product opening-stock side-effect chain.
+  Identified direct unscoped queries in product/account callbacks, inventory, settings,
+  accounting entry creation, and derived resource SELECTs.
+  Result: audit documented; no runtime code changed in Stage 8.
+
+Stage 7 regression checks on this checkpoint:
+  Focused tenant tests: 41/41 PASS.
+  Python compileall: PASS.
+  Frontend JavaScript syntax: 19/19 PASS.
+  AST resource registry: 21/21 Resource definitions map to TENANT_TABLES.
+
+Not run:
+  Flask API/integration tests; Flask is unavailable in this environment.
+  Browser E2E, PostgreSQL/RLS, financial two-company integration tests.
+
+Schema / release gate:
+  LATEST_VERSION=4; no DB changes.
+  TENANT_DATA_SCOPING_ENABLED=False.
+  No GitHub upload or production changes.

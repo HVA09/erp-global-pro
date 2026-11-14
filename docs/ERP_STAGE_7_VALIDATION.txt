@@ -1,0 +1,31 @@
+ERP Global Pro — Stage 7 Validation
+Date: 2026-11-13
+
+Focused tests:
+  python -m unittest backend.tests.test_tenant_migrations backend.tests.test_tenant_ownership_migration backend.tests.test_tenant_relationship_migration backend.tests.test_tenant_uniqueness_preflight backend.tests.test_tenancy_service backend.tests.test_tenant_crud_scoping -v
+  Result: 41 tests, OK
+
+Python syntax:
+  python -m compileall -q backend
+  Result: PASS
+
+Frontend syntax:
+  node --check for every frontend/**/*.js
+  Result: 19/19 PASS
+
+Resource registry static check:
+  21/21 Resource table names belong to migrations.TENANT_TABLES
+  Result: PASS
+
+Schema:
+  LATEST_VERSION remains 4; no migration or production DB change.
+
+Not run:
+  Full Flask suite and real Flask API tests (Flask package is unavailable in this environment).
+  Browser E2E.
+  PostgreSQL / RLS tests.
+  Restored production database uniqueness preflight.
+
+Release gate:
+  TENANT_DATA_SCOPING_ENABLED remains False.
+  Do not enable multiple-company operations or deploy as multi-tenant production.

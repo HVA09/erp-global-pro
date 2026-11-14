@@ -1,0 +1,29 @@
+ERP Global Pro — Stage 24 Validation
+Date: 2026-11-14
+
+Local focused test suites:
+- Stage 21/22 regression: 48/48 PASS
+- Stage 23 signer + SQL design (12 signer + 18 design): 30/30 PASS
+- Total focused local tests: 78/78 PASS
+
+Static/code checks:
+- Python compileall: PASS
+- JavaScript syntax: 19/19 PASS
+- GitHub Actions workflow YAML parse: PASS
+- PostgreSQL compatibility preflight generation: PASS
+- SQL template render/splitter/design tests: PASS
+
+Live PostgreSQL tests:
+- Psycopg/PostgreSQL adapter integration: 11 tests configured; NOT RUN locally.
+- Signed tenant context + control-plane read routines: 19 tests configured; NOT RUN locally.
+- Combined live PostgreSQL tests: 30 NOT RUN.
+- Reason: ERP_TEST_POSTGRES_ADMIN_DSN is not configured; psycopg/psycopg_pool and PostgreSQL server are unavailable in this build environment.
+- The test runner reported both test classes as skipped because the DSN is absent; this is not a successful live database run.
+
+Application/production state:
+- SQLite schema remains v8 and is the only database connected to the application.
+- PostgreSQL adapter and signed RLS context are prototypes only; no PostgreSQL migration was applied to ERP tables.
+- Flask HTTP/E2E tests were not run in this Stage 24 build.
+- TENANT_DATA_SCOPING_ENABLED remains False.
+- No GitHub repository was created and no code was uploaded or deployed.
+- Original archive remains unchanged; original SHA-256 is recorded in docs/ORIGINAL_ARCHIVE_SHA256.txt.

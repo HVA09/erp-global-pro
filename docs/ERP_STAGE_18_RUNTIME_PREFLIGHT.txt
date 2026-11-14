@@ -1,0 +1,22 @@
+ERP Global Pro runtime preflight: blocked
+Environment: development
+[BLOCK] python:Flask
+[BLOCK] python:Werkzeug
+[PASS] python:PyJWT
+[PASS] python:openpyxl
+[PASS] python:reportlab
+[BLOCK] python:gunicorn
+[PASS] production_secret
+[PASS] private_storage_outside_frontend
+[PASS] database_storage_paths_separate
+[PASS] database_path_no_symlink
+[PASS] storage_path_no_symlink
+[PASS] frontend_path_no_symlink
+[BLOCK] clamav_scanner
+[PASS] maintenance_mode_disabled
+[PASS] multi_company_release_gate_closed
+BLOCKER: Missing required Python dependency: Flask.
+BLOCKER: Missing required Python dependency: Werkzeug.
+WARNING: Optional package is not installed: gunicorn.
+WARNING: ClamAV is unavailable; uploaded files must remain non-downloadable/pending.
+WARNING: Multi-company production is not approved: TENANT_DATA_SCOPING_ENABLED must remain False.

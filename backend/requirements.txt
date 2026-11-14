@@ -1,0 +1,8 @@
+Flask>=3.0,<4
+PyJWT>=2.7,<3
+openpyxl>=3.1,<4
+reportlab>=4.0,<5
+# Production WSGI server (optional for development)
+gunicorn>=21.2
+# Explicitly declared for Flask's real WSGI test client and HTTP runtime.
+Werkzeug>=3.0,<4

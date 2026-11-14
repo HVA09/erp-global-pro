@@ -1,0 +1,20 @@
+{
+  "project": "ERP Global Pro",
+  "environment": "development",
+  "status": "blocked",
+  "missing_required_dependencies": ["Flask", "Werkzeug"],
+  "available_required_dependencies": ["PyJWT", "openpyxl", "reportlab"],
+  "optional_missing": ["gunicorn"],
+  "security_warnings": [
+    "ClamAV is unavailable in this build environment; uploads must remain pending/non-downloadable until scanned.",
+    "Multi-company production is not approved; TENANT_DATA_SCOPING_ENABLED must remain False."
+  ],
+  "path_checks": {
+    "private_storage_outside_frontend": "PASS",
+    "database_and_storage_separate": "PASS",
+    "database_storage_frontend_symlink_checks": "PASS",
+    "maintenance_mode_disabled": "PASS"
+  },
+  "pip_install_attempt": "FAILED: package-index DNS/network resolution unavailable",
+  "read_only": true
+}

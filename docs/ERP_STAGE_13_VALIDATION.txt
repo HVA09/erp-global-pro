@@ -1,0 +1,13 @@
+ERP Global Pro — Stage 13 Validation
+Date: 2026-11-13
+
+Tenant tests: 96/96 PASS
+Python compileall: PASS
+JavaScript syntax: 19/19 PASS
+SQLite schema: v6 (no migration added)
+Flask/HTTP/E2E: NOT RUN (Flask unavailable)
+PostgreSQL/RLS: NOT RUN
+Production DB: NOT accessed or modified
+GitHub: no repository created; no push performed
+Tenant operational gate: TENANT_DATA_SCOPING_ENABLED=False
+Per-file SHA-256 entries (manifest excludes itself): 122

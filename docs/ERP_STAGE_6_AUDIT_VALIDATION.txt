@@ -1,0 +1,31 @@
+ERP Global Pro Stage 6 — Static Tenant Query Scope Audit
+Date: 2026-11-13
+
+Scope:
+  Read-only inspection of backend/erp/crud.py, resources.py, API modules,
+  service modules, tenancy request guard, audit logging, import/export,
+  settings and sequence services.
+
+Findings:
+  - Generic Resource CRUD does not automatically scope list/count/get/update/delete by company_id.
+  - Resource create does not inject the trusted active company_id.
+  - F(ref) validates only the referenced ID, not same-company ownership.
+  - 21 declarative business resources are defined in resources.py.
+  - Static grep identified 68 direct DB call sites in API modules and 172 in services.
+  - Core business services do not show explicit company_id SQL predicates in their source files in this scan.
+  - settings/sequences, audit listing and import/export were identified as specific priority paths.
+  - Application gate remains fail-closed when company_count > 1 and TENANT_DATA_SCOPING_ENABLED=False.
+
+Changes:
+  Documentation only. No runtime query, schema, migration, production database,
+  GitHub repository or deployment was changed.
+
+Validation inherited from Stage 5 code checkpoint:
+  30 focused tests PASS; Python compile PASS; frontend JS syntax 18/18 PASS.
+  Full Flask suite, browser E2E, PostgreSQL/RLS, and restored production-data audit
+  remain NOT RUN.
+
+Decision:
+  Do NOT enable TENANT_DATA_SCOPING_ENABLED. Implement generic CRUD scope and
+  same-company reference checks before modifying individual services; then test
+  every custom API and data channel with two-company negative cases.

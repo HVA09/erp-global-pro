@@ -1,0 +1,35 @@
+ERP GLOBAL PRO — STAGE 10 VALIDATION
+Date: 2026-11-13
+Checkpoint: SQLite schema version 6
+
+PASS
+- Focused tenant suite: 56/56 tests passed.
+- Stage 10 migration/service tests: 4/4 passed.
+- Full in-memory legacy schema migration v5 -> v6: PASS.
+- Migration idempotence: PASS.
+- Sequence table primary key: (company_id, name).
+- Settings table primary key: (company_id, key).
+- stock_levels primary key: (company_id, product_id, warehouse_id).
+- All 15 reviewed business uniqueness rules are company-scoped through indexes or composite primary keys.
+- Same business keys can repeat across separate companies for tested account codes, categories, cost centers, departments, product SKU/barcode, warehouse codes, journal numbers, payroll month, trade-document numbers, settings keys and sequence names.
+- Duplicate business keys within one company are rejected by the tested constraints.
+- Sequence service generates independent counters per company.
+- SQLite PRAGMA foreign_key_check after migration: PASS (zero violations).
+- Stage 4 relationship guards restored: 110 INSERT/UPDATE relation triggers.
+- Migration row-count preservation checks are enabled for rebuilt tables and sequences.
+- python -m compileall -q backend/erp backend/tests backend/scripts: PASS.
+- JavaScript node --check: 19/19 files passed.
+- Archive integrity and internal SHA-256 manifest: checked after package creation.
+
+NOT RUN / NOT CLAIMED
+- Full Flask application or HTTP API tests: not run; Flask is not installed in the execution environment.
+- Browser E2E tests: not run.
+- PostgreSQL migration, composite FKs and RLS: not implemented / not run.
+- Production database preflight: not run; no production database backup was provided.
+- Production deployment or GitHub upload: not performed.
+
+RELEASE SAFETY
+- TENANT_DATA_SCOPING_ENABLED remains False.
+- Database multi-company write-blocking triggers remain active.
+- Do not activate operational multi-company usage based on this checkpoint alone.
+- No downgrade migration is provided. After a successful v6 migration, recovery requires restoring the pre-migration backup.
