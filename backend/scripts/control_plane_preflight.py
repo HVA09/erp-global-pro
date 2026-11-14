@@ -194,12 +194,11 @@ def build_report(
                 "unexpected_schema_version",
                 f"Expected SQLite schema v{EXPECTED_SCHEMA_VERSION}; found v{schema_version}.",
             ))
-        if len(versions) != 1:
-            warnings.append(_finding(
-                "multiple_schema_version_rows",
-                "schema_version contains more than one row; maximum version is reported.",
-                severity="warning",
-                count=len(versions),
+        expected_history = list(range(1, EXPECTED_SCHEMA_VERSION + 1))
+        if sorted(set(versions)) != expected_history or len(versions) != len(set(versions)):
+            blockers.append(_finding(
+                "invalid_schema_migration_history",
+                "schema_version must contain each version from 1 through 8 exactly once.",
             ))
 
         integrity = [str(row[0]) for row in conn.execute("PRAGMA integrity_check").fetchmany(20)]
