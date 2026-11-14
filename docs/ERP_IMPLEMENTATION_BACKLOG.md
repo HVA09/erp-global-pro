@@ -57,7 +57,7 @@ The backlog is ordered to prevent unsafe partial multi-tenancy. A phase is not c
 ## EPIC 5 — PostgreSQL and production hardening
 
 - [x] Add isolated Psycopg 3 adapter prototype and SQLite DB adapter contract (not wired into app).
-- [x] Add PostgreSQL disposable CI job and live adapter/RLS/pool tests (Stage 22; execution still pending first GitHub Actions run).
+- [x] Add PostgreSQL disposable CI job and live adapter/RLS/pool tests (Stage 22; 30/30 live tests passed on PostgreSQL 16 in Python 3.11 and 3.12 during CI run 43640872392).
 - [ ] Wire PostgreSQL adapter into application only after live driver tests pass.
 - [ ] Add PostgreSQL migration and verified data-transfer tooling.
 - [ ] Add tenant-aware composite foreign keys and enable RLS on every tenant-owned table.
@@ -153,3 +153,19 @@ The backlog is ordered to prevent unsafe partial multi-tenancy. A phase is not c
 - [ ] Build PostgreSQL schema/migrations and composite FKs after live driver integration is green.
 - [ ] Design a trustworthy tenant context boundary; a user-settable custom GUC alone is not a standalone defense against SQL injection.
 - [ ] Keep `TENANT_DATA_SCOPING_ENABLED=False` until all database, HTTP, UI, files and backup release gates pass.
+
+
+## Stage 25A — CI evidence and application integration boundary
+- [x] Run and inspect GitHub Actions on commit `6badac066a0fdd10ae6bda79f753fee5edae6210`.
+- [x] Pass the 30-test live PostgreSQL suite on PostgreSQL 16 under Python 3.11 and 3.12 (11 adapter/RLS/pool tests + 19 signed-context/control-plane tests per matrix job).
+- [x] Pass the full Backend suite (303 tests per Python version; two PostgreSQL test classes are intentionally skipped here and run in the dedicated live-PG job).
+- [x] Pass real Flask HTTP integration tests (11 per Python version), adapter spike tests (32 per Python version), Python compilation and frontend JavaScript syntax checks.
+- [x] Audit Flask/JWT, SQLite DB access, Psycopg prototype, signed-context signer and Stage24 SQL routine boundaries.
+- [x] Document why Stage24 read routines cannot serve as login/bootstrap and why a split SQLite-auth/PostgreSQL-membership source of truth is unsafe without an explicit consistency protocol.
+- [ ] Decide and document one authoritative source of truth for users, companies, memberships and roles before wiring Flask to PostgreSQL.
+- [ ] Design PostgreSQL login credential verification and pre-company membership discovery without granting broad direct SELECT to the operational app role.
+- [ ] Define HMAC key provisioning, key IDs, rotation overlap, secret storage and incident rotation.
+- [ ] Extend the adapter/request transaction contract for a pooled PostgreSQL connection and transaction-local signed tenant context; prove context cleanup on success, exception, rollback and pool reuse.
+- [ ] Build a disposable end-to-end test flow: login proof → company selection → signed claims → PostgreSQL transaction context → RLS-scoped query.
+- [ ] Add expiry, replay/revocation, revoked membership, suspended company, tampering, forged GUC and cross-company IDOR negative tests.
+- [ ] Keep SQLite v8 as active backend and `TENANT_DATA_SCOPING_ENABLED=False` until the full operational API and data migration release gates pass.
