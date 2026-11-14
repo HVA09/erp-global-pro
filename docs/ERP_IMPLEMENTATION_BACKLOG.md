@@ -162,10 +162,28 @@ The backlog is ordered to prevent unsafe partial multi-tenancy. A phase is not c
 - [x] Pass real Flask HTTP integration tests (11 per Python version), adapter spike tests (32 per Python version), Python compilation and frontend JavaScript syntax checks.
 - [x] Audit Flask/JWT, SQLite DB access, Psycopg prototype, signed-context signer and Stage24 SQL routine boundaries.
 - [x] Document why Stage24 read routines cannot serve as login/bootstrap and why a split SQLite-auth/PostgreSQL-membership source of truth is unsafe without an explicit consistency protocol.
-- [ ] Decide and document one authoritative source of truth for users, companies, memberships and roles before wiring Flask to PostgreSQL.
-- [ ] Design PostgreSQL login credential verification and pre-company membership discovery without granting broad direct SELECT to the operational app role.
-- [ ] Define HMAC key provisioning, key IDs, rotation overlap, secret storage and incident rotation.
+- [x] Decide and document PostgreSQL as the single authoritative source of truth for users, companies, memberships, roles and ERP operational data after the full migration/cutover; retain SQLite v8 as the only active backend until then.
+- [x] Specify an isolated authentication-service boundary, restricted auth principal, short-lived pre-company challenge and database-issued signed tenant context; implementation remains pending.
+- [x] Specify HMAC key ownership, restricted security schema, key IDs and rotation requirements; provisioning/rotation implementation remains pending.
 - [ ] Extend the adapter/request transaction contract for a pooled PostgreSQL connection and transaction-local signed tenant context; prove context cleanup on success, exception, rollback and pool reuse.
 - [ ] Build a disposable end-to-end test flow: login proof → company selection → signed claims → PostgreSQL transaction context → RLS-scoped query.
 - [ ] Add expiry, replay/revocation, revoked membership, suspended company, tampering, forged GUC and cross-company IDOR negative tests.
-- [ ] Keep SQLite v8 as active backend and `TENANT_DATA_SCOPING_ENABLED=False` until the full operational API and data migration release gates pass.
+- [x] Preserve SQLite v8 as the only active backend and keep `TENANT_DATA_SCOPING_ENABLED=False` in the Stage25B design and runbook.
+
+
+## Stage 25B — Identity source of truth and control-plane migration contract
+- [x] Decide PostgreSQL as the final single source of truth after a complete verified cutover; no dual-write or split authority.
+- [x] Define global user identity and membership-scoped effective role/permissions.
+- [x] Deprecate `users.role` as legacy metadata for authorization; retain it only during a compatibility period.
+- [x] Record that the existing role catalog is global and company-custom roles require a separately approved schema/authorization extension.
+- [x] Define scrypt hash preservation, email canonicalization preflight, ID preservation, timestamp handling and JSONB permission validation.
+- [x] Specify isolated authentication-service boundary, restricted auth principal, short-lived pre-company challenge and signed-context issuance requirements.
+- [x] Specify control-plane ETL source, staging import, deterministic reconciliation, sequence reset, retry/rebuild, rollback and final cutover controls.
+- [ ] Implement read-only SQLite v8 control-plane preflight with machine-readable collision/orphan/invalid-state report.
+- [ ] Create versioned PostgreSQL control-plane schema and migration ledger on disposable PostgreSQL 16 only.
+- [ ] Implement repeatable ETL for roles, users, companies and company_memberships preserving IDs and password hashes.
+- [ ] Add exact row-count, canonical digest, unique/FK and permission mapping reconciliation tests.
+- [ ] Add synthetic scrypt verification and invalid-hash handling tests; never log hashes or plaintext credentials.
+- [ ] Rehearse interrupted migration, transaction rollback and full rebuild from a clean disposable target.
+- [ ] Keep the PostgreSQL control plane disconnected from Flask until Stage25C/25D authentication and transaction-context tests pass.
+- [ ] Keep SQLite v8 as active backend and `TENANT_DATA_SCOPING_ENABLED=False` until every release gate passes.
