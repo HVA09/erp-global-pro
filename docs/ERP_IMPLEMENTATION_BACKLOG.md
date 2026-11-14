@@ -179,7 +179,7 @@ The backlog is ordered to prevent unsafe partial multi-tenancy. A phase is not c
 - [x] Define scrypt hash preservation, email canonicalization preflight, ID preservation, timestamp handling and JSONB permission validation.
 - [x] Specify isolated authentication-service boundary, restricted auth principal, short-lived pre-company challenge and signed-context issuance requirements.
 - [x] Specify control-plane ETL source, staging import, deterministic reconciliation, sequence reset, retry/rebuild, rollback and final cutover controls.
-- [x] Implement read-only SQLite v8 control-plane preflight and focused tests; awaiting GitHub Actions validation before acceptance.
+- [x] Implement read-only SQLite v8 control-plane preflight and focused tests; 11 focused tests passed on Python 3.11/3.12, including actual schema.sql + SQLite v8 migrations with synthetic data (CI run 43643939785).
 - [ ] Create versioned PostgreSQL control-plane schema and migration ledger on disposable PostgreSQL 16 only.
 - [ ] Implement repeatable ETL for roles, users, companies and company_memberships preserving IDs and password hashes.
 - [ ] Add exact row-count, canonical digest, unique/FK and permission mapping reconciliation tests.
