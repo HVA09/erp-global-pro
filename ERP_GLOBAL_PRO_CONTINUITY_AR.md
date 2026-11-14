@@ -1,6 +1,6 @@
 # ERP Global Pro — سجل الاستمرارية الرئيسي
 
-**آخر تحديث:** 14 نوفمبر 2026 — Stage 25B: أداة preflight للقراءة فقط واختباراتها مضافة؛ تحقق CI قيد الانتظار
+**آخر تحديث:** 14 نوفمبر 2026 — Stage 25B: أداة preflight للقراءة فقط واختباراتها اجتازت CI على Python 3.11 و3.12
 **آخر مخطط:** SQLite v8؛ لم يتغير في Stage 25A
 **آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip`
 **نقطة الاستئناف التالية:** Stage 25C — بناء preflight للبيانات وcontrol-plane schema/migration runner على PostgreSQL 16 disposable، ثم اختبار ETL ومطابقة البيانات قبل تصميم خدمة المصادقة التنفيذية.
@@ -348,6 +348,20 @@ Stage 23 سحبت جميع امتيازات دور التطبيق على `compan
 - لا تغيير لـSQLite v8 أو قاعدة إنتاج أو إعدادات تشغيل.
 - `TENANT_DATA_SCOPING_ENABLED=False` ما زالت إلزامية.
 
-**الحالة التنفيذية:** أضيف `backend/scripts/control_plane_preflight.py` لقراءة SQLite v8 دون تعديل، مع اختبارات في `backend/tests/test_control_plane_preflight.py`. لا تعتبر الخطوة مقبولة حتى نجاح CI ومراجعة نتائجه.
+**الحالة التنفيذية:** أضيف `backend/scripts/control_plane_preflight.py` لقراءة SQLite v8 دون تعديل، مع 11 اختبارًا مركزًا على كل من Python 3.11 و3.12. شملت الاختبارات بناء `schema.sql` الفعلي وتشغيل ترحيلات SQLite حتى v8 باستخدام بيانات اصطناعية. اجتاز التشغيل CI رقم `43643939785` في المهام الأربع.
 
-**نقطة الاستئناف:** Stage25C — إكمال preflight على نسخة SQLite v8 مستعادة، ثم بناء control-plane schema ومشغل migration تجريبي على PostgreSQL 16 disposable مع اختبارات rollback وreconciliation.
+**نقطة الاستئناف:** تشغيل preflight على نسخة SQLite v8 حقيقية ومستعادة في بيئة المستخدم ومراجعة التقرير، ثم بناء control-plane schema ومشغل migration تجريبي على PostgreSQL 16 disposable مع اختبارات rollback وreconciliation.
+
+
+## 16. Stage25B — نتيجة التحقق من أداة preflight
+- **GitHub Actions:** [43643939785](https://github.com/HVA09/erp-global-pro/actions/runs/43643939785) — `success`, 4/4 jobs.
+- **Python 3.11 و3.12:** 11/11 اختبارًا مركزًا لأداة preflight في كل إصدار.
+- الاختبار الفعلي الإضافي أنشأ قاعدة من `backend/erp/schema.sql` ثم نفذ `apply_migrations` حتى SQLite v8 قبل تشغيل preflight ببيانات اصطناعية؛ اجتاز في الإصدارين.
+- Full backend suite: **314 tests PASS** لكل إصدار، مع تخطي فئتي PostgreSQL في المجموعة العامة لأنها تعمل في job منفصل.
+- Live PostgreSQL 16: **30/30 PASS** في كل إصدار Python.
+- HTTP integration: 11/11 PASS في كل إصدار.
+- Python compileall وJavaScript syntax: PASS.
+
+**الحد:** الاختبارات تستخدم بيانات اصطناعية. لم تُشغّل الأداة بعد على نسخة قاعدة مستخدم حقيقية؛ لا توجد نسخة SQLite v8 فعلية مقدمة للتشغيل في هذه الجلسة. لذلك لا يوجد تقرير جاهزية ETL لبيانات ERP الفعلية بعد.
+
+مرجع التقرير: `ERP_GLOBAL_PRO_STAGE25B_PREFLIGHT_VALIDATION.txt`.
