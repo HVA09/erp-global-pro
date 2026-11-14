@@ -1,180 +1,182 @@
-# ERP Global Pro — Stage 25A/25B Application Tenant Context Integration Plan
+# ERP Global Pro — المرحلة 25: خطة ربط سياق الشركة بتطبيق Flask
 
-**Date:** 2026-11-14  
-**Status:** Stage 25A evidence and architecture-boundary review completed; Stage 25B implementation not started  
-**Baseline commit:** `6badac066a0fdd10ae6bda79f753fee5edae6210`  
-**CI run:** [43640872392](https://github.com/HVA09/erp-global-pro/actions/runs/43640872392)
+**التاريخ:** 14 نوفمبر 2026  
+**الحالة:** اكتملت المرحلة 25A (توثيق نتائج CI ومراجعة حدود التكامل المعماري). لم يبدأ تنفيذ ربط التطبيق في 25B بعد.  
+**Commit الأساس:** `6badac066a0fdd10ae6bda79f753fee5edae6210`  
+**تشغيل CI:** [43640872392](https://github.com/HVA09/erp-global-pro/actions/runs/43640872392)
 
-## 1. Objective
+## 1. الهدف
 
-Connect the existing Flask/JWT authentication lifecycle to the signed PostgreSQL tenant context in a way that can eventually enforce PostgreSQL RLS for all tenant-owned business rows.
+ربط دورة المصادقة الحالية في Flask/JWT بسياق الشركة الموقّع الذي صُمم لحماية PostgreSQL RLS، بطريقة تسمح مستقبلًا بتطبيق عزل قاعدة البيانات على جميع سجلات الشركات.
 
-The integration must not create two competing sources of truth for users, companies, memberships or roles. It must preserve the currently working SQLite v8 application until a complete PostgreSQL migration and rollback path are proven. This plan does not authorize production deployment, production schema changes or activation of multi-company operations.
+يجب ألا ينشئ التكامل مصدرين متنافسين للحقيقة للمستخدمين أو الشركات أو العضويات أو الأدوار. وتبقى قاعدة SQLite v8 هي قاعدة التطبيق الفعلية حتى تثبت عملية ترحيل PostgreSQL كاملة وقابلة للاستعادة والتراجع.
 
-## 2. Verified baseline
+هذه الوثيقة لا تسمح بالنشر، أو تعديل قاعدة إنتاج، أو تفعيل تشغيل متعدد الشركات.
 
-GitHub Actions run `43640872392` completed with `success` on commit `6badac0`. All four matrix jobs passed:
+## 2. خط الأساس المثبت
 
-| Job | Result |
-|---|---:|
-| Backend — Python 3.11 | PASS |
-| Backend — Python 3.12 | PASS |
-| Live PostgreSQL 16 — Python 3.11 | PASS |
-| Live PostgreSQL 16 — Python 3.12 | PASS |
+اكتمل تشغيل GitHub Actions رقم `43640872392` على Commit `6badac0` بالحالة `success`. اجتازت المهام الأربع جميعها:
 
-Per Python version:
-- 32 Psycopg adapter prototype tests passed.
-- 303 backend tests passed; the two PostgreSQL integration classes are intentionally skipped in this generic job because they run in the dedicated PostgreSQL job.
-- 11 real Flask HTTP integration tests passed.
-- 30 live PostgreSQL tests passed in the dedicated job: 11 adapter/RLS/pool tests plus 19 signed-context/control-plane tests.
+| المهمة | النتيجة |
+|---|---|
+| Backend — Python 3.11 | نجاح |
+| Backend — Python 3.12 | نجاح |
+| PostgreSQL 16 الحي — Python 3.11 | نجاح |
+| PostgreSQL 16 الحي — Python 3.12 | نجاح |
 
-The live PostgreSQL matrix uses disposable PostgreSQL 16 service containers. It proves the tested adapter and SQL prototype behaviors in CI; it does **not** prove that the production Flask application is connected to PostgreSQL.
+لكل إصدار Python:
+- 32 اختبارًا لمحول Psycopg التجريبي.
+- 303 اختبارات Backend ناجحة؛ فئتا اختبارات PostgreSQL متخطيتان عمدًا في هذه المجموعة العامة لأنهما تعملان في المهمة المنفصلة.
+- 11 اختبار HTTP حقيقي عبر Flask.
+- 30 اختبار PostgreSQL حي ناجح في المهمة المخصصة: 11 اختبارًا للمحول والمعاملات وRLS وpool، و19 اختبارًا لسياق الشركة الموقّع وإجراءات قراءة control-plane.
 
-## 3. Current application facts confirmed by source review
+استُخدمت خدمة PostgreSQL 16 مؤقتة داخل GitHub Actions. تثبت النتائج سلوك النماذج والاختبارات التي شُغّلت، لكنها لا تثبت أن تطبيق Flask الفعلي يستخدم PostgreSQL.
 
-### 3.1 Flask authentication and tenant selection
+## 3. الحقائق الحالية التي أكدتها مراجعة المصدر
 
-- `backend/erp/__init__.py` calls `security.load_user()` before API request handling.
-- `backend/erp/security.py` validates the existing HS256 JWT, reads the user and global role, then revalidates the selected company membership and obtains its permissions.
-- The existing JWT includes `sub`, and when selected, `cid` and `mid`. Membership revocation and inactive company state invalidate the request.
-- `backend/erp/api/auth.py` implements login, listing companies and switching companies using the current tenancy service.
-- `backend/erp/services/tenancy.py` reads `users`, `roles`, `companies` and `company_memberships` through the current database module.
+### 3.1 مصادقة Flask واختيار الشركة
 
-### 3.2 Database boundary
+- يستدعي `backend/erp/__init__.py` الدالة `security.load_user()` قبل معالجة طلبات API.
+- تتحقق `backend/erp/security.py` من JWT الحالي بتوقيع HS256، ثم تقرأ المستخدم والدور العام، وبعد ذلك تعيد التحقق من عضوية الشركة المحددة وتجلب صلاحياتها.
+- يحتوي JWT الحالي على `sub`، وعند اختيار شركة يحتوي أيضًا على `cid` و`mid`. إلغاء العضوية أو تعطيل الشركة يبطل سياق الطلب.
+- تنفذ `backend/erp/api/auth.py` تسجيل الدخول وعرض الشركات وتبديل الشركة من خلال خدمات tenancy الحالية.
+- تقرأ `backend/erp/services/tenancy.py` جداول `users` و`roles` و`companies` و`company_memberships` من خلال وحدة قاعدة البيانات الحالية.
 
-- `backend/erp/db.py` imports and directly uses `SQLITE_ADAPTER`.
-- Schema initialization and versioned migrations are SQLite-specific.
-- The current request connection is managed through Flask `g`; the transaction API uses SQLite `BEGIN IMMEDIATE` for outer write transactions and nested savepoints.
-- `DatabaseAdapter` is a useful narrow contract, but it does not yet abstract every SQLite-specific schema, migration, backup, error, transaction and query behavior used by the app.
-- `Psycopg3Adapter` is an isolated prototype. It is not selected by configuration or wired into `db.py`; its `begin(write=True)` deliberately rejects the current SQLite write-lock semantic.
+### 3.2 حدود قاعدة البيانات
 
-### 3.3 Signed PostgreSQL context and Stage24 routines
+- تستورد `backend/erp/db.py` المتغير `SQLITE_ADAPTER` وتستخدمه مباشرة.
+- تهيئة المخطط وترحيلاته الحالية خاصة بـSQLite.
+- تُدار وصلة الطلب من خلال Flask `g`، وتستخدم المعاملة الخارجية `BEGIN IMMEDIATE` في SQLite مع savepoints للمعاملات المتداخلة.
+- يمثل `DatabaseAdapter` عقدًا أوليًا مفيدًا، لكنه لا يعزل بعد كل سلوكيات المخطط والترحيل والنسخ الاحتياطي والأخطاء والمعاملات وSQL الخاصة بـSQLite.
+- محول `Psycopg3Adapter` نموذج تجريبي مستقل، وليس مختارًا عبر إعدادات التطبيق ولا مربوطًا بـ`db.py`. ويرفض عمدًا `begin(write=True)` لأن دلالة قفل الكتابة الحالية في SQLite لا تملك بديلًا معتمدًا بعد في PostgreSQL.
 
-- Stage23's SQL template expects dedicated PostgreSQL control tables for users, companies and memberships, and a protected signing-key table.
-- The PostgreSQL application role has no direct SELECT on the control-plane tables or the signing-key table.
-- Stage24 adds narrowly scoped read-only `SECURITY DEFINER` functions, including `list_my_companies()`, `get_current_company_profile()` and `get_current_membership()`.
-- Those functions require an already valid signed company context. They are not a login endpoint and cannot bootstrap the first company selection.
-- No finished PostgreSQL credential-verification/bootstrap API, trusted pre-company company-discovery flow, key provisioning/rotation procedure or Flask request integration exists yet.
+### 3.3 سياق PostgreSQL الموقّع وإجراءات Stage24
 
-## 4. Critical architecture decision
+- يفترض قالب SQL في Stage23 وجود جداول تحكم مخصصة في PostgreSQL للمستخدمين والشركات والعضويات، إضافة إلى جدول مفاتيح توقيع محمي.
+- لا يملك دور PostgreSQL الخاص بالتطبيق صلاحية SELECT مباشرة على جداول التحكم أو جدول مفاتيح التوقيع.
+- أضافت Stage24 إجراءات قراءة محدودة باستخدام `SECURITY DEFINER`، ومنها `list_my_companies()` و`get_current_company_profile()` و`get_current_membership()`.
+- تتطلب هذه الإجراءات سياق شركة موقّعًا وصالحًا مسبقًا؛ لذلك ليست واجهات تسجيل دخول ولا تستطيع إنشاء أول اختيار للشركة.
+- لا توجد حتى الآن واجهة PostgreSQL مكتملة ومختبرة للتحقق من بيانات الدخول أو بدء سياق ما قبل اختيار الشركة، ولا إجراء لتوزيع مفاتيح HMAC وتدويرها، ولا ربط لدورة Flask بالمعاملة الموقعة.
 
-**Do not directly connect the signer to Flask at this point. Do not split authentication in SQLite and membership authorization in PostgreSQL without a designed consistency protocol.**
+## 4. القرار المعماري الحرج
 
-A hybrid arrangement could authenticate a user against one database while accepting company membership, role or company status from another. If those records diverge, revoked memberships or stale permissions could continue to authorize database access.
+**لا نربط signer مباشرة بـFlask في هذه المرحلة، ولا ننشئ مسارًا هجينًا يصادق المستخدم عبر SQLite ثم يقرر عضويته وصلاحياته من PostgreSQL دون بروتوكول اتساق واضح ومختبر.**
 
-Before wiring the request path, Stage25 must select and test one authoritative source of truth for:
-- user identity and active status;
-- password credential material and login verification;
-- company records and active/suspended status;
-- memberships and active/suspended/revoked status;
-- role and permission definitions, including the currently global role catalog.
+قد يصادق المسار الهجين المستخدم في قاعدة، ثم يقبل عضوية أو دورًا أو حالة شركة من قاعدة أخرى. وعند اختلاف البيانات يمكن أن تستمر صلاحية قديمة بعد إلغاء عضوية أو تعليق شركة.
 
-### Recommended target
+قبل ربط دورة الطلب، يجب تحديد مصدر حقيقة واحد للآتي:
+- هوية المستخدم وحالة تفعيله.
+- بيانات اعتماد كلمة المرور والتحقق من تسجيل الدخول.
+- سجلات الشركات وحالاتها النشطة أو الموقوفة.
+- العضويات وحالاتها النشطة أو المعلقة أو الملغاة.
+- الأدوار والصلاحيات، بما في ذلك كتالوج الأدوار العام الحالي.
 
-Move the complete identity/control-plane authority to PostgreSQL as one controlled migration, then let Flask authenticate and select companies through narrowly scoped PostgreSQL functions or a separately constrained authentication principal. Do not maintain asynchronous dual writes between SQLite and PostgreSQL.
+### المسار المستهدف الموصى به
 
-SQLite remains the active application backend until this route, its data migration, rollback and end-to-end tests are complete.
+نقل مصدر حقيقة الهوية والتحكم بالكامل إلى PostgreSQL ضمن ترحيل مضبوط، ثم جعل Flask يصادق المستخدم ويختار الشركة من خلال إجراءات محدودة أو principal مستقل ذي صلاحيات ضيقة. لا نعتمد مزامنة مزدوجة غير ذرية بين SQLite وPostgreSQL.
 
-## 5. Stage25 work packages
+تبقى SQLite قاعدة التطبيق النشطة حتى ينجح هذا المسار واختبارات الترحيل والتراجع.
 
-### Stage25B — Identity source of truth and migration contract
+## 5. حزم العمل للمرحلة 25
 
-1. Inventory the authoritative fields and constraints in SQLite v8 for users, roles, companies and memberships.
-2. Define PostgreSQL control-plane schema, uniqueness, foreign keys, status semantics and migration version/checksum strategy.
-3. Define a one-way, repeatable import from a restored SQLite copy into a disposable PostgreSQL database.
-4. Compare row counts, identity IDs, membership relationships, role permissions and credential-hash compatibility.
-5. Define cutover and rollback criteria. Do not dual-write in production.
+### Stage25B — مصدر حقيقة الهوية وعقد الترحيل
 
-**Exit gate:** source-of-truth decision and a rehearsed, disposable migration with a reconciliation report.
+1. جرد الحقول والقيود الفعلية في SQLite v8 لجداول المستخدمين والأدوار والشركات والعضويات.
+2. تصميم مخطط control-plane في PostgreSQL، بما فيه التفرد والمفاتيح الأجنبية وحالات السجلات وإصدارات الترحيل وبصماتها.
+3. تصميم استيراد أحادي الاتجاه وقابل للتكرار من نسخة SQLite مستعادة إلى قاعدة PostgreSQL مؤقتة.
+4. مقارنة أعداد السجلات والمعرفات وعلاقات العضوية وصلاحيات الأدوار وتوافق بصمات كلمات المرور.
+5. توثيق شروط التحويل والتراجع. يمنع اعتماد dual-write في الإنتاج.
 
-### Stage25C — Login and pre-company bootstrap
+**بوابة الخروج:** قرار موثق لمصدر الحقيقة، وتجربة ترحيل على قاعدة مؤقتة مع تقرير مطابقة.
 
-1. Design an authentication boundary that allows password verification without granting the operational app role broad direct SELECT on users or credential tables.
-2. Prefer narrowly scoped, audited `SECURITY DEFINER` routines or a distinct authentication principal with the minimum required database privileges.
-3. Design a short-lived, one-use pre-authentication proof/challenge. It must not accept an arbitrary client-supplied `user_id` as proof of identity.
-4. Permit company discovery only for the authenticated principal represented by that proof.
-5. On company selection, revalidate the active membership, company status and permissions from the authoritative control plane before issuing the existing application JWT and the separate signed PostgreSQL tenant context.
+### Stage25C — تسجيل الدخول والتهيئة قبل اختيار الشركة
 
-Stage24's `list_my_companies()` cannot be reused as the pre-login company list because it requires an already valid company-scoped signed context.
+1. تصميم حد مصادقة يسمح بالتحقق من كلمة المرور دون منح دور التطبيق التشغيلي صلاحيات SELECT واسعة على المستخدمين أو بيانات الاعتماد.
+2. تفضيل إجراءات `SECURITY DEFINER` ضيقة ومراجعة، أو principal مستقل لخدمة المصادقة بأقل صلاحيات لازمة.
+3. تصميم إثبات/تحدٍّ قصير العمر ويُستخدم مرة واحدة قبل المصادقة النهائية. لا يجوز قبول `user_id` يرسله العميل بوصفه إثبات هوية.
+4. السماح بعرض الشركات فقط للمستخدم الذي يمثله إثبات ما قبل المصادقة الموثق.
+5. عند اختيار الشركة، إعادة التحقق من العضوية وحالة الشركة وصلاحياتها من مصدر الحقيقة المعتمد قبل إصدار JWT التطبيق وسياق PostgreSQL الموقّع المنفصل.
 
-**Exit gate:** tests for valid credentials, invalid credentials, disabled users, no membership, multiple memberships, suspended company, revoked membership and attempts to enumerate another user's companies.
+لا يمكن إعادة استخدام `list_my_companies()` في Stage24 كقائمة ما قبل تسجيل الدخول؛ لأنها تتطلب سياق شركة موقّعًا صالحًا بالفعل.
 
-### Stage25D — HMAC key lifecycle
+**بوابة الخروج:** اختبارات بيانات الدخول الصحيحة والخاطئة، المستخدم المعطل، غياب العضويات، تعدد الشركات، الشركة الموقوفة، العضوية الملغاة، ومحاولات استعراض شركات مستخدم آخر.
 
-1. Keep JWT signing and PostgreSQL tenant-context HMAC as distinct purposes with distinct keys and audiences.
-2. Define a secure provisioning ceremony for placing the same tenant-context key material in the trusted signing service/secret store and the protected PostgreSQL key table, without exposing it to the operational app role.
-3. Use explicit key IDs and support an overlap window during rotation.
-4. Specify rotation, revocation, emergency replacement, backup and recovery procedures.
-5. Ensure payloads, signatures and key material never enter logs, Git, ZIP artifacts or client-visible errors.
+### Stage25D — دورة حياة مفاتيح HMAC
 
-**Exit gate:** key rotation tests covering active key, previous key overlap, retired key rejection and unknown key ID rejection.
+1. إبقاء مفتاح JWT ومفتاح HMAC الخاص بسياق PostgreSQL منفصلين من حيث الغرض والمفتاح والجمهور.
+2. تحديد إجراء آمن لتوفير مادة مفتاح سياق الشركة لخدمة التوقيع/مخزن الأسرار وجدول PostgreSQL المحمي، دون كشفه لدور التطبيق التشغيلي.
+3. استخدام معرفات مفاتيح واضحة ودعم فترة تداخل أثناء تدوير المفاتيح.
+4. تحديد إجراءات التدوير والإلغاء والاستبدال الطارئ والنسخ الاحتياطي والاستعادة.
+5. منع ظهور payload أو signature أو مواد المفاتيح في السجلات أو Git أو ملفات ZIP أو رسائل الخطأ الظاهرة للعميل.
 
-### Stage25E — Request-scoped PostgreSQL transaction context
+**بوابة الخروج:** اختبارات المفتاح النشط، وفترة قبول المفتاح السابق، ورفض المفتاح المتقاعد أو معرف المفتاح المجهول.
 
-1. Extend the adapter contract for pooled connection acquisition, transaction ownership and safe transaction-local context installation.
-2. After authentication and membership validation, derive claims on the server; never trust client-provided claims or GUC values.
-3. In the same database transaction used for tenant data, set `erp.tenant_payload` and `erp.tenant_signature` using transaction-local settings before the first RLS-protected query.
-4. Ensure success, exception, rollback, disconnect and pool return cannot leak context to the next request.
-5. Replace the SQLite-specific `BEGIN IMMEDIATE` assumption with explicit PostgreSQL isolation/locking semantics and concurrency tests.
+### Stage25E — سياق معاملة PostgreSQL المرتبطة بالطلب
 
-**Exit gate:** same-connection pool reuse tests plus context reset tests for success, exception, rollback and cancellation.
+1. توسيع عقد المحول لدعم استعارة وصلة من pool، وامتلاك المعاملة، وتثبيت سياق الشركة داخل المعاملة.
+2. بعد المصادقة والتحقق من العضوية، يُنشأ claim على الخادم؛ لا يُوثق أي claim أو GUC يرسله العميل.
+3. ضمن معاملة قاعدة البيانات نفسها التي ستقرأ بيانات الشركة، تُضبط `erp.tenant_payload` و`erp.tenant_signature` بقيم transaction-local قبل أول استعلام على جدول محمي بـRLS.
+4. ضمان عدم تسرب السياق عند النجاح أو الاستثناء أو rollback أو قطع الاتصال أو إعادة الوصلة إلى pool.
+5. استبدال افتراض `BEGIN IMMEDIATE` الخاص بـSQLite بدلالات عزل وقفل صريحة في PostgreSQL مع اختبارات تزامن.
 
-### Stage25F — Disposable end-to-end slice
+**بوابة الخروج:** اختبارات إعادة استخدام اتصال pool واختبارات تنظيف السياق عند النجاح والاستثناء وrollback والإلغاء.
 
-Before migrating all ERP tables, implement one disposable proof-of-integration slice:
+### Stage25F — شريحة تكامل كاملة على قاعدة مؤقتة
 
-`login → authenticated pre-auth proof → company selection → signed context → PostgreSQL transaction → current_company_id() verification → RLS-scoped test row`
+قبل ترحيل كل جداول ERP، ننفذ شريحة إثبات تكامل واحدة على مخطط اختبار مؤقت:
 
-Required negative cases:
-- missing or malformed proof;
-- expired or future-issued claims;
-- tampered payload or signature;
-- arbitrary `set_config` / forged GUC values;
-- non-member user, revoked membership or suspended company;
-- wrong company ID and cross-company row access;
-- replay/revocation behavior for `jti`;
-- connection pool reuse after successful and failed transactions.
+`login → authenticated pre-auth proof → company selection → signed context → PostgreSQL transaction → current_company_id() → RLS-scoped test row`
 
-**Exit gate:** full end-to-end integration tests pass on PostgreSQL 16 in CI for Python 3.11 and 3.12, with no missing-dependency skips.
+الحالات السلبية المطلوبة:
+- إثبات مفقود أو مشوه.
+- claim منتهي أو صادر بتاريخ مستقبلي.
+- payload أو signature تم التلاعب به.
+- محاولة تزوير GUC أو استدعاء `set_config` اعتباطيًا.
+- مستخدم غير عضو أو عضوية ملغاة أو شركة موقوفة.
+- معرف شركة غير صحيح أو الوصول إلى صف شركة أخرى.
+- إعادة استخدام claim/replay وإلغاء `jti`.
+- إعادة استخدام اتصال pool بعد معاملة ناجحة وأخرى فاشلة.
 
-### Stage25G — Only after the slice is accepted
+**بوابة الخروج:** اجتياز اختبارات التكامل الكاملة على PostgreSQL 16 في CI لكل من Python 3.11 و3.12، دون تخطّي متطلبات البيئة.
 
-- Build complete PostgreSQL migrations for tenant-owned ERP tables.
-- Add tenant-aware composite foreign keys and matching indexes.
-- Apply RLS to every tenant-owned table, with least-privilege grants and verified policy coverage.
-- Port every API, CRUD callback, service, report, import/export, file, backup/restore and background operation.
-- Reconcile accounting balances, inventory valuation, payroll totals and business invariants after migration.
-- Rehearse rollback and recovery using a restored copy.
+### Stage25G — ما يبدأ فقط بعد قبول الشريحة
 
-This package is explicitly **not** part of the current documentation-only Stage25A work.
+- إنشاء ترحيلات PostgreSQL كاملة لجداول أعمال ERP التابعة للشركات.
+- إضافة مفاتيح أجنبية مركبة وفهارس متوافقة مع عزل الشركات.
+- تطبيق RLS على كل جدول تابع لشركة، مع مراجعة المنح والصلاحيات وتغطية السياسات.
+- نقل كل API وCRUD callback وخدمة وتقرير واستيراد/تصدير وملف ونسخ احتياطي/استعادة وعمل خلفي.
+- مطابقة الأرصدة المحاسبية وتقييم المخزون وإجماليات الرواتب وثوابت العمل بعد الترحيل.
+- إجراء اختبارات تراجع واستعادة من نسخة مستعادة.
 
-## 6. Non-negotiable safety constraints
+هذه الحزمة **ليست** جزءًا من عمل التوثيق الحالي في Stage25A.
 
-- Keep `TENANT_DATA_SCOPING_ENABLED=False`.
-- Keep SQLite v8 as the only active application database.
-- Do not apply Stage23/24 SQL templates to a production database.
-- Do not connect a partially migrated PostgreSQL control plane to SQLite-backed login.
-- Do not enable RLS on real ERP tables until their schema, composite FKs, app grants and all tenant query paths are migrated and tested.
-- Keep the original archive unchanged and retain its recorded SHA-256.
-- Use disposable databases and synthetic test data for all Stage25 prototypes.
+## 6. قيود السلامة غير القابلة للتجاوز
 
-## 7. Known non-blocking CI maintenance observations
+- إبقاء `TENANT_DATA_SCOPING_ENABLED=False`.
+- إبقاء SQLite v8 قاعدة التطبيق النشطة الوحيدة.
+- عدم تطبيق قوالب Stage23/24 على قاعدة إنتاج.
+- عدم ربط control-plane جزئي في PostgreSQL بمصادقة ما زالت تعتمد SQLite.
+- عدم تفعيل RLS على جداول ERP الحقيقية قبل ترحيل مخططها ومفاتيحها المركبة ومنح التطبيق وجميع مسارات الاستعلام.
+- إبقاء الأرشيف الأصلي دون تعديل والاحتفاظ ببصمة SHA-256 المسجلة.
+- استخدام قواعد بيانات مؤقتة وبيانات اختبار اصطناعية لجميع نماذج Stage25.
 
-The successful CI run surfaced a test file-stream `ResourceWarning` and deprecation warnings from a Flask version check and the Node-based GitHub Actions runtime. They did not fail the build. Track these separately from the security-critical tenant-context integration.
+## 7. ملاحظات CI غير المانعة
 
-## 8. Current Stage25A outcome
+أظهر التشغيل الناجح تحذير `ResourceWarning` لتيار ملف في اختبار تنزيل مرفق، وتحذيرات deprecation لفحص إصدار Flask وبعض تبعيات Node المستخدمة في GitHub Actions. لم تتسبب هذه التحذيرات في فشل البناء، وتُسجل كأعمال صيانة منفصلة عن بوابة الأمن.
 
-Completed in this branch:
-- verified the four-job CI run and live PostgreSQL logs;
-- reviewed Flask/JWT, tenancy service, SQLite DB layer, Psycopg prototype, signed-context code and Stage24 SQL;
-- documented the source-of-truth and login/bootstrap blockers;
-- updated the project continuity record and implementation backlog.
+## 8. ناتج Stage25A الحالي
 
-Not completed:
-- no application code was changed;
-- no PostgreSQL adapter was wired into Flask;
-- no PostgreSQL migration was applied to ERP business tables;
-- no production or hosted database was touched;
-- no tenant gate was enabled.
+اكتمل في هذا الفرع:
+- التحقق من مهام CI الأربع ومراجعة سجلات PostgreSQL الحية.
+- مراجعة Flask/JWT وخدمة tenancy وطبقة SQLite ونموذج Psycopg وكود signed context وقالب SQL في Stage24.
+- توثيق عوائق مصدر الحقيقة وتسجيل الدخول والتهيئة قبل اختيار الشركة.
+- تحديث سجل الاستمرارية وملف backlog.
 
-**Next step:** resolve Stage25B's source-of-truth and credential/bootstrap design on a disposable database before any code-level application integration.
+لم يكتمل:
+- لم يتغير أي كود تطبيقي.
+- لم يُربط محول PostgreSQL بدورة Flask.
+- لم تُطبق ترحيلات PostgreSQL على جداول أعمال ERP.
+- لم يتم تعديل قاعدة إنتاج أو قاعدة مستضافة.
+- لم يُفعّل حاجز تشغيل تعدد الشركات.
+
+**الخطوة التالية:** حسم مصدر الحقيقة وتصميم التحقق من بيانات الدخول والتهيئة قبل اختيار الشركة في Stage25B، باستخدام قاعدة مؤقتة، قبل أي ربط برمجي لدورة الطلب.
