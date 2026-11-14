@@ -191,7 +191,17 @@ class ControlPlanePreflightTests(unittest.TestCase):
     def test_legacy_user_role_mismatch_is_warning_not_authorization_source(self):
         conn = self._connect()
         conn.execute("INSERT INTO roles(name,label,permissions,is_system) VALUES('viewer','Viewer','[]',1)")
-        conn.execute("UPDATE users SET role='viewer' WHERE id=1")
+        conn.execute(
+            "INSERT INTO companies(id,name,industry,country,currency,timezone,status,created_at) "
+            "VALUES(?,?,?,?,?,?,?,?)",
+            (11, "Company B", "general", "LY", "LYD", "Africa/Tripoli", "active",
+             "2026-11-14 20:00:00"),
+        )
+        conn.execute(
+            "INSERT INTO company_memberships(id,company_id,user_id,role,status,created_at) "
+            "VALUES(?,?,?,?,?,?)",
+            (101, 11, 1, "viewer", "active", "2026-11-14 20:00:00"),
+        )
         conn.commit()
         conn.close()
 
@@ -201,6 +211,21 @@ class ControlPlanePreflightTests(unittest.TestCase):
             "legacy_user_role_differs_from_memberships",
             [item["code"] for item in report["warnings"]],
         )
+        self.assertEqual(report["summary"]["legacy_role_mismatches"], 1)
+
+    def test_noncanonical_scrypt_work_factor_is_not_accepted(self):
+        salt = base64.b64encode(b"s" * 16).decode("ascii")
+        digest = base64.b64encode(b"d" * 32).decode("ascii")
+        conn = self._connect()
+        conn.execute(
+            "UPDATE users SET password_hash=? WHERE id=1",
+            (f"scrypt$32768$8$1${salt}${digest}",),
+        )
+        conn.commit()
+        conn.close()
+
+        report = PREFLIGHT.build_report(self.db_path)
+        self.assertEqual(report["summary"]["unsupported_password_hashes"], 1)
 
     def test_database_is_opened_query_only_and_unchanged(self):
         before = PREFLIGHT._file_sha256(self.db_path)
