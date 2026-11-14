@@ -90,12 +90,9 @@ def _valid_scrypt_hash(value: Any) -> bool:
         derived_key = base64.b64decode(parts[5], validate=True)
     except (ValueError, TypeError):
         return False
-    return (
-        n >= 2 and n & (n - 1) == 0
-        and r > 0 and p > 0
-        and len(salt) >= 16
-        and len(derived_key) >= 16
-    )
+    # The current application emits one known parameter set. Reject other
+    # cost profiles rather than accepting attacker-controlled scrypt work factors.
+    return n == 2 ** 14 and r == 8 and p == 1 and len(salt) == 16 and len(derived_key) == 32
 
 
 def _valid_timestamp(value: Any) -> bool:
@@ -393,7 +390,7 @@ def build_report(
         ]
         for user_id, membership_roles in memberships_by_user.items():
             user = users_by_id.get(user_id)
-            if user and membership_roles and str(user["role"]) not in membership_roles:
+            if user and membership_roles != {str(user["role"])}:
                 legacy_role_mismatches.append(user_id)
 
         if orphan_membership_ids:
