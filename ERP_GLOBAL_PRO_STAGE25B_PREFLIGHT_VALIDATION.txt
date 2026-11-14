@@ -3,8 +3,10 @@ Date: 2026-11-14
 
 Repository: HVA09/erp-global-pro
 Branch: stage25/application-tenant-context-plan
-Tested commit: f0cf0ba92a68b60bf07595919d82c095e1ac5d45
-GitHub Actions run: https://github.com/HVA09/erp-global-pro/actions/runs/43643939785
+Preflight code/test commit: f0cf0ba92a68b60bf07595919d82c095e1ac5d45
+Initial preflight run: https://github.com/HVA09/erp-global-pro/actions/runs/43643939785
+Latest branch head with documentation updates: ad951195e762fbb28bdddc6a72e0923e78f5cd51
+Latest branch CI run: https://github.com/HVA09/erp-global-pro/actions/runs/43644108767 (4/4 jobs SUCCESS)
 Workflow: ERP backend quality
 Overall result: SUCCESS
 Matrix jobs: 4/4 SUCCESS
