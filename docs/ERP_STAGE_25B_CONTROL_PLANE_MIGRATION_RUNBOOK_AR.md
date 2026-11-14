@@ -83,10 +83,12 @@
 - timestamps من نوع `TIMESTAMPTZ` بعد validation.
 
 ### roles
-- `id` ثابت أو `name` مفتاح فريد حسب قرار ترحيل IDs.
-- `permissions JSONB NOT NULL` مع CHECK يتأكد أن القيمة array.
+- الحفاظ على `name TEXT PRIMARY KEY` كما هو في SQLite؛ لا حاجة لإضافة role ID مصطنع خلال الترحيل الأول.
+- `label TEXT NOT NULL`.
+- `permissions JSONB NOT NULL` مع CHECK يتأكد أن القيمة array من strings فقط.
 - `is_system BOOLEAN NOT NULL`.
-- لا يمنح operational app role صلاحية تعديل تعريفات الأدوار.
+- تبقى `company_memberships.role` مفتاحًا أجنبيًا إلى `roles(name)`.
+- لا يمنح operational app role صلاحية تعديل تعريفات الأدوار العامة.
 - لا يفترض هذا المخطط وجود company-specific custom roles؛ أضيفت كمطلب منفصل إذا تقرر دعمها.
 
 ### company_memberships
