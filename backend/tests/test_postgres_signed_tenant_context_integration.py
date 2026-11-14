@@ -9,6 +9,7 @@ from __future__ import annotations
 import importlib.util
 import os
 import secrets
+import sys
 import time
 import unittest
 from pathlib import Path
@@ -42,7 +43,12 @@ class SignedTenantContextPostgresIntegrationTests(unittest.TestCase):
         def _load(name, relative):
             spec = importlib.util.spec_from_file_location(name, backend / relative)
             module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
+            sys.modules[name] = module
+            try:
+                spec.loader.exec_module(module)
+            except Exception:
+                sys.modules.pop(name, None)
+                raise
             return module
 
         adapter_mod = _load("erp_stage23_pg_adapter", "erp/db_adapters/postgres_psycopg.py")
@@ -75,10 +81,9 @@ class SignedTenantContextPostgresIntegrationTests(unittest.TestCase):
                 )
             )
             cls.admin.execute(
-                cls.sql.SQL("CREATE ROLE {} LOGIN PASSWORD %s NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS").format(
-                    cls.sql.Identifier(cls.app_role)
-                ),
-                (cls.password,),
+                cls.sql.SQL("CREATE ROLE {} LOGIN PASSWORD {} NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS").format(
+                    cls.sql.Identifier(cls.app_role), cls.sql.Literal(cls.password)
+                )
             )
             cls.admin.execute(
                 cls.sql.SQL("CREATE SCHEMA {} AUTHORIZATION CURRENT_USER").format(

@@ -146,6 +146,7 @@ class Stage17RealHttpIntegrationTests(unittest.TestCase):
             "FRONTEND_DIR": str(ROOT.parent / "frontend"),
             "SECRET_KEY": "stage17-http-test-secret-key-material-0001",
             "TESTING": True,
+            "CORS_ORIGINS": ["https://erp.example.test"],
             "TENANT_DATA_SCOPING_ENABLED": True,  # Explicitly test-only; production config stays False.
             "FILE_QUOTA_BYTES": 1024 * 1024,
             "FILE_UPLOADS_PER_HOUR": 30,

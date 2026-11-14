@@ -47,7 +47,7 @@ def level(pid, wid, company_id=None):
 
 def _apply_level(pid, wid, dq, dv, company_id):
     db.execute('INSERT INTO stock_levels(product_id,warehouse_id,qty,value_cents,company_id) VALUES(?,?,?,?,?) '
-               'ON CONFLICT(product_id,warehouse_id) DO UPDATE SET qty=ROUND(qty+excluded.qty,6), '
+               'ON CONFLICT(company_id,product_id,warehouse_id) DO UPDATE SET qty=ROUND(qty+excluded.qty,6), '
                'value_cents=value_cents+excluded.value_cents '
                'WHERE stock_levels.company_id=excluded.company_id',
                (pid, wid, round(dq, 6), dv, company_id))

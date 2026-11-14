@@ -57,10 +57,9 @@ class Psycopg3LivePostgresIntegrationTests(unittest.TestCase):
         try:
             cls.admin.execute(
                 cls.sql.SQL(
-                    "CREATE ROLE {} LOGIN PASSWORD %s NOSUPERUSER NOCREATEDB "
+                    "CREATE ROLE {} LOGIN PASSWORD {} NOSUPERUSER NOCREATEDB "
                     "NOCREATEROLE NOINHERIT NOBYPASSRLS"
-                ).format(cls.sql.Identifier(cls.role)),
-                (cls.password,),
+                ).format(cls.sql.Identifier(cls.role), cls.sql.Literal(cls.password))
             )
             cls.admin.execute(
                 cls.sql.SQL("CREATE SCHEMA {} AUTHORIZATION {}").format(

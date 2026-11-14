@@ -113,7 +113,7 @@ class Stage9ServiceScopeTests(unittest.TestCase):
                                     name TEXT NOT NULL, is_active INTEGER NOT NULL DEFAULT 1);
             CREATE TABLE stock_levels(product_id INTEGER NOT NULL, warehouse_id INTEGER NOT NULL,
                                       qty REAL NOT NULL, value_cents INTEGER NOT NULL, company_id INTEGER NOT NULL,
-                                      UNIQUE(product_id,warehouse_id));
+                                      UNIQUE(company_id,product_id,warehouse_id));
             CREATE TABLE stock_moves(id INTEGER PRIMARY KEY, product_id INTEGER NOT NULL, warehouse_id INTEGER NOT NULL,
                                      qty REAL NOT NULL, value_cents INTEGER NOT NULL, move_type TEXT NOT NULL,
                                      ref_type TEXT, ref_id INTEGER, date TEXT NOT NULL, note TEXT, lot_no TEXT,

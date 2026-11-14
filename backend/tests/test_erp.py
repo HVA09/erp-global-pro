@@ -88,16 +88,17 @@ class Base(unittest.TestCase):
 
 class MultiTenantFoundationTests(Base):
     def test_first_setup_creates_company_and_active_owner_membership(self):
-        company = db.one('SELECT id,name,status FROM companies')
-        self.assertIsNotNone(company)
-        self.assertEqual(company['name'], 'T Co')
-        self.assertEqual(company['status'], 'active')
-        membership = db.one(
-            'SELECT m.role,m.status,u.email FROM company_memberships m '
-            'JOIN users u ON u.id=m.user_id WHERE m.company_id=?',
-            (company['id'],),
-        )
-        self.assertEqual(membership, {'role': 'admin', 'status': 'active', 'email': 'admin@t.com'})
+        with self.app.app_context():
+            company = db.one('SELECT id,name,status FROM companies')
+            self.assertIsNotNone(company)
+            self.assertEqual(company['name'], 'T Co')
+            self.assertEqual(company['status'], 'active')
+            membership = db.one(
+                'SELECT m.role,m.status,u.email FROM company_memberships m '
+                'JOIN users u ON u.id=m.user_id WHERE m.company_id=?',
+                (company['id'],),
+            )
+            self.assertEqual(membership, {'role': 'admin', 'status': 'active', 'email': 'admin@t.com'})
 
 
 
