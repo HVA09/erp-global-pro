@@ -1,0 +1,49 @@
+ERP Global Pro — Stage25B Control-Plane Preflight Validation
+Date: 2026-11-14
+
+Repository: HVA09/erp-global-pro
+Branch: stage25/application-tenant-context-plan
+Tested commit: f0cf0ba92a68b60bf07595919d82c095e1ac5d45
+GitHub Actions run: https://github.com/HVA09/erp-global-pro/actions/runs/43643939785
+Workflow: ERP backend quality
+Overall result: SUCCESS
+Matrix jobs: 4/4 SUCCESS
+
+New preflight coverage:
+- 11 focused tests passed on Python 3.11.
+- 11 focused tests passed on Python 3.12.
+- The suite includes:
+  - a clean control-plane fixture;
+  - canonical email collision detection using strip().casefold();
+  - redaction of password hashes and default email values;
+  - unknown membership-role detection;
+  - invalid permission JSON and unsupported scrypt format detection;
+  - rejection of noncanonical scrypt work factors;
+  - migration-history validation;
+  - legacy users.role mismatch reporting as a warning, not an authorization source;
+  - query-only / unchanged-source verification;
+  - symlink source rejection and CLI JSON/exit-code behavior;
+  - an end-to-end fixture using the actual ERP schema.sql and running SQLite migrations through v8 before preflight.
+
+Backend jobs:
+- Python 3.11: 32 adapter spike tests PASS; 314 backend tests PASS (2 PostgreSQL integration classes skipped in this general job, because they run in the dedicated PG job); 11 HTTP tests PASS.
+- Python 3.12: same results.
+- Python compilation and frontend JavaScript syntax checks PASS.
+
+Live PostgreSQL jobs:
+- PostgreSQL 16 / Python 3.11: 30/30 PASS.
+- PostgreSQL 16 / Python 3.12: 30/30 PASS.
+
+Scope and limitations:
+- Preflight is read-only and does not migrate or modify SQLite.
+- It validates synthetic fixtures and the actual source schema/migration path with synthetic test data.
+- It has NOT yet been run against a real restored user database copy; that requires a verified, private backup copy to be provided/run in the user's environment.
+- No real password hashes or plaintext credentials are emitted.
+- No PostgreSQL control-plane schema or ETL has been implemented yet.
+- SQLite v8 remains the only active application database.
+- No production database was modified, no deployment occurred, and TENANT_DATA_SCOPING_ENABLED remains False.
+
+Next gate:
+- Run the preflight against a verified restored/offline SQLite v8 copy.
+- Review all blockers and warnings.
+- Only then build the versioned PostgreSQL control-plane schema and repeatable ETL on a disposable PostgreSQL 16 database.
