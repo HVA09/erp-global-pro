@@ -167,7 +167,7 @@ class ControlPlanePreflightTests(unittest.TestCase):
 
     def test_invalid_permissions_and_scrypt_format_are_blockers(self):
         conn = self._connect()
-        conn.execute("UPDATE roles SET permissions='{"write":true}' WHERE name='admin'")
+        conn.execute("UPDATE roles SET permissions='not-json' WHERE name='admin'")
         conn.execute("UPDATE users SET password_hash='pbkdf2$legacy$hash' WHERE id=1")
         conn.commit()
         conn.close()
