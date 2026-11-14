@@ -1,0 +1,57 @@
+ERP Global Pro — Stage 25A CI Validation
+Date: 2026-11-14
+
+Repository:
+- HVA09/erp-global-pro
+- Branch tested: main
+- Commit: 6badac066a0fdd10ae6bda79f753fee5edae6210
+- GitHub Actions run: https://github.com/HVA09/erp-global-pro/actions/runs/43640872392
+- Workflow: ERP backend quality
+- Overall conclusion: SUCCESS
+- Matrix jobs: 4/4 SUCCESS
+
+Backend jobs:
+- Python 3.11:
+  - PostgreSQL adapter prototype unit tests: 32/32 PASS
+  - Complete backend test suite: 303 tests PASS, 2 PostgreSQL classes skipped by design in this job
+  - Real Flask HTTP integration tests: 11/11 PASS
+  - Python compileall: PASS
+  - Frontend JavaScript syntax: PASS
+  - PostgreSQL compatibility inventory generated and uploaded
+- Python 3.12:
+  - PostgreSQL adapter prototype unit tests: 32/32 PASS
+  - Complete backend test suite: 303 tests PASS, 2 PostgreSQL classes skipped by design in this job
+  - Real Flask HTTP integration tests: 11/11 PASS
+  - Python compileall: PASS
+  - Frontend JavaScript syntax: PASS
+  - PostgreSQL compatibility inventory generated and uploaded
+
+Dedicated live PostgreSQL 16 jobs:
+- Python 3.11: 30/30 PASS
+- Python 3.12: 30/30 PASS
+- 11 adapter / transaction / RLS / pool-reuse tests
+- 19 signed tenant-context / control-plane routine tests
+- PostgreSQL test service started healthy; live tests were not skipped.
+
+Interpretation:
+- The Psycopg prototype, sample RLS policies, signed tenant context and safe control-plane read routines passed their dedicated live PostgreSQL 16 tests.
+- The tests ran against disposable GitHub Actions PostgreSQL services and test schemas.
+- They do not demonstrate that the production Flask application is PostgreSQL-backed.
+
+Application / production state:
+- SQLite v8 remains the only database connected to the Flask application.
+- PostgreSQL adapter and signed context remain prototypes and are not wired into Flask request lifecycle.
+- Stage24 routines are read-only and require a valid signed company context; they are not a login/bootstrap API.
+- No production database was modified and no deployment was performed.
+- TENANT_DATA_SCOPING_ENABLED remains False.
+
+Non-blocking warnings:
+- One ResourceWarning reported an unclosed file stream in the HTTP attachment download test.
+- Deprecation warnings appeared for Flask __version__ use and Node-based Actions dependencies.
+- These warnings did not cause any job to fail.
+
+Next gate:
+- Decide one authoritative identity/control-plane source of truth.
+- Design login credential verification and pre-company company discovery.
+- Define HMAC key provisioning and rotation.
+- Then implement and test the Flask-to-PostgreSQL transaction-context bridge on a disposable environment.
