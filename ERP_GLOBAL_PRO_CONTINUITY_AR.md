@@ -1,11 +1,13 @@
 # ERP Global Pro — سجل الاستمرارية الرئيسي
 
-**آخر تحديث:** 14 نوفمبر 2026 — Stage 25B: أداة preflight للقراءة فقط واختباراتها اجتازت CI على Python 3.11 و3.12
-**آخر مخطط:** SQLite v8؛ لم يتغير في Stage 25A
-**آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip`
-**نقطة الاستئناف التالية:** Stage 25C — بناء preflight للبيانات وcontrol-plane schema/migration runner على PostgreSQL 16 disposable، ثم اختبار ETL ومطابقة البيانات قبل تصميم خدمة المصادقة التنفيذية.
-**حالة GitHub:** المستودع `HVA09/erp-global-pro` مرفوع؛ `main` عند `6badac0`، وفحوص CI على هذا الالتزام ناجحة. توجد وثائق Stage25A في فرع `stage25/application-tenant-context-plan` للمراجعة.
+**آخر تحديث:** 15 نوفمبر 2026 — Stage 25B: أداة preflight للقراءة فقط واختبارات Regression الإضافية قيد التحقق عبر CI.
+**آخر مخطط:** SQLite v8؛ لا تغيير في قاعدة التطبيق النشطة.
+**آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip` (أرشيف الأساس الأصلي محفوظ دون تعديل).
+**نقطة الاستئناف التالية:** بعد نجاح CI ومراجعة #5، شغّل preflight على نسخة SQLite v8 مستعادة وغير متصلة؛ ثم صمّم control-plane schema وETL على PostgreSQL 16 مؤقتة مع reconciliation وrollback قبل أي دمج تطبيقي.
+**حالة GitHub:** المستودع `HVA09/erp-global-pro`؛ `main` عند `1cda8eddf368821687c8730ed0216d7f657e9463`. طلب #5 مفتوح Draft على الفرع `stage25/control-plane-preflight-rebased-20261115`، والرأس السابق لتحديث سجل الاستمرارية هو `8f9365301f98cf624921eb1c4f03adc388945ed7`.
+**حماية main:** أفاد مالك المستودع بأنه فعّل حماية الفرع. لم أغيّر إعدادات الحماية. نقطة GitHub API الخاصة بقراءة Branch Protection أعادت 403 لصلاحية التكامل، لذلك لا أستطيع فحص تفاصيل القواعد آلياً؛ ولا يُعد هذا الرفض دليلاً على تعطيل الحماية.
 **حالة تعدد الشركات:** حاجز التشغيل مغلق؛ `TENANT_DATA_SCOPING_ENABLED=False`.
+**الترحيل:** لم يُنفذ preflight على قاعدة فعلية مستعادة بعد؛ لم تتوفر نسخة SQLite في مساحة العمل الحالية. لا ترحيل أو dual-write أو تعديل إنتاجي.
 
 اقرأ هذا الملف أولًا عند فتح محادثة جديدة، ثم وثائق Stage 19–25B. هذا السجل يصف ما ثبت وجوده وما تم اختباره، ولا يحل محل فحص الكود.
 
