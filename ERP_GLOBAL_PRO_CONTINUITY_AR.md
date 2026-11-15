@@ -4,7 +4,7 @@
 **آخر مخطط:** SQLite v8؛ لا تغيير في قاعدة التطبيق النشطة.
 **آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip` (أرشيف الأساس الأصلي محفوظ دون تعديل).
 **نقطة الاستئناف التالية:** Stage 25C — الحصول على نسخة SQLite v8 مستعادة وغير متصلة، تشغيل preflight ومراجعة blockers/warnings، ثم إنشاء control-plane schema وETL تجريبي على PostgreSQL 16 disposable مع reconciliation وrollback؛ لا ربط للتطبيق قبل إثبات السلامة.
-**حالة GitHub:** المستودع `HVA09/erp-global-pro`؛ `main` عند `5d1d19838a27a4db5b4d3cbaabb256b354da877e`. طلب #5 دُمج Squash في `5d1d19838a27a4db5b4d3cbaabb256b354da877e`. فحوص طلب الدمج 4/4 نجحت، وفحوص ما بعد الدمج على `main` في CI run [43665874804](https://github.com/HVA09/erp-global-pro/actions/runs/43665874804) اكتملت 4/4 بنجاح.
+**حالة GitHub:** المستودع `HVA09/erp-global-pro`؛ `main` عند `d755aeca7e8dfbdc7180c5859588e1e55d58b457`. دُمج Stage 25B (#5) في `5d1d19838a27a4db5b4d3cbaabb256b354da877e`، ثم دُمج سجل الحوكمة المحدّث في `aad690c6025b9de60d8251ddf1babfeda31543d5`، وتبعه تصحيح سجل الحوكمة الخاص بحماية `main` في `d755aeca7e8dfbdc7180c5859588e1e55d58b457`. اكتملت فحوص Stage 25B بعد الدمج 4/4 بنجاح في CI run [43665874804](https://github.com/HVA09/erp-global-pro/actions/runs/43665874804).
 **حماية main:** أفاد مالك المستودع بأنه فعّل حماية الفرع. لم أغيّر إعدادات الحماية. واجهة التكامل لا تسمح لي بقراءة تفاصيل Branch Protection (403)؛ لا يُعد ذلك دليلاً على أن الحماية معطّلة.
 **حالة تعدد الشركات:** حاجز التشغيل مغلق؛ `TENANT_DATA_SCOPING_ENABLED=False`.
 **الترحيل:** لم يُنفذ preflight على قاعدة مستخدمين فعلية مستعادة بعد؛ لم تتوفر نسخة SQLite في مساحة العمل الحالية. لا ترحيل أو dual-write أو تعديل إنتاجي.
