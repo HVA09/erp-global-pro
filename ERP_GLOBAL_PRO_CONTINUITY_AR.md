@@ -1,18 +1,18 @@
 # ERP Global Pro — سجل الاستمرارية الرئيسي
 
-**آخر تحديث:** 14 نوفمبر 2026 — Stage 24: secure control-plane read routines prototype
-**آخر مخطط:** SQLite v8 (لم يتغير في Stage 19–23)
+**آخر تحديث:** 14 نوفمبر 2026 — Stage 25B: أداة preflight للقراءة فقط واختباراتها اجتازت CI على Python 3.11 و3.12
+**آخر مخطط:** SQLite v8؛ لم يتغير في Stage 25A
 **آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip`
-**نقطة الاستئناف التالية:** Stage 25 — بعد رفع الحزمة إلى المستودع المستقل، شغّل 30 اختبار PostgreSQL حيًا (Stage 22: 11، Stage 23/24: 19) على GitHub Actions في Python 3.11 و3.12؛ أصلح أي فشل SQL/privileges ثم ابدأ control-plane migration prototype منفصلًا فقط بعد نجاحها.
-**حالة GitHub:** لم يُنشأ مستودع ERP ولم يتم رفع المشروع.
+**نقطة الاستئناف التالية:** Stage 25C — بناء preflight للبيانات وcontrol-plane schema/migration runner على PostgreSQL 16 disposable، ثم اختبار ETL ومطابقة البيانات قبل تصميم خدمة المصادقة التنفيذية.
+**حالة GitHub:** المستودع `HVA09/erp-global-pro` مرفوع؛ `main` عند `6badac0`، وفحوص CI على هذا الالتزام ناجحة. توجد وثائق Stage25A في فرع `stage25/application-tenant-context-plan` للمراجعة.
 **حالة تعدد الشركات:** حاجز التشغيل مغلق؛ `TENANT_DATA_SCOPING_ENABLED=False`.
 
-اقرأ هذا الملف أولًا عند فتح محادثة جديدة، ثم وثائق Stage 19 و20 و21 و22 و23 و24. هذا السجل يصف ما ثبت وجوده وما تم اختباره، ولا يحل محل فحص الكود.
+اقرأ هذا الملف أولًا عند فتح محادثة جديدة، ثم وثائق Stage 19–25B. هذا السجل يصف ما ثبت وجوده وما تم اختباره، ولا يحل محل فحص الكود.
 
 ## 1. هوية المشروع والحدود
 
 - المشروع: ERP Global Pro، Flask + SQLite وواجهة JavaScript خالصة.
-- مستودع مستقل مقترح: `HVA09/erp-global-pro`؛ لم يتم إنشاؤه أو رفع الكود إليه.
+- المستودع المستقل: `HVA09/erp-global-pro`؛ تم رفع Stage24 baseline ثم إصلاحات CI في Commit `6badac0`.
 - يجب أن يبقى مستقلًا عن `HVA09/ai-chat-app` و`HVA09/lumen-learning-platform`.
 - الأرشيف الأصلي محفوظ ولا يُعدّل. SHA-256 الأصلي:
 
@@ -43,9 +43,9 @@
 | 19 | تدقيق تبعيات SQLite وجرد ما يلزم لنقل PostgreSQL |
 | 20 | `DatabaseAdapter` و`SQLiteAdapter` وربط DB functions المركزية، وماسح PostgreSQL |
 | 21 | مقارنة Psycopg 3 وSQLAlchemy Core واختيار Psycopg 3 للـprototype؛ adapter spike و32 اختبار Fake DB-API |
-| **22** | **اختبارات PostgreSQL حقيقية + RLS تجريبي + pool reuse ضمن CI PostgreSQL 16** | **أضيفت ولم تُشغّل بعد؛ لا يوجد PostgreSQL/driver محليًا ولا مستودع GitHub متصل** |
-| **23** | **signed tenant context لـRLS: HMAC، دالة SECURITY DEFINER، حماية control plane** | **Prototype فقط؛ 74 اختبارًا محليًا في ذلك الإصدار، والاختبارات الحية لم تُشغّل** |
-| **24** | **واجهات قراءة آمنة لمخطط التحكم: قائمة شركات المستخدم، ملف الشركة الحالية، وعضويته** | **Prototype فقط؛ 78 اختبارًا محليًا مركّزًا ناجحًا، و30 اختبار PostgreSQL حيًا مهيأة ولم تُشغّل** |
+| **22** | **اختبارات PostgreSQL حقيقية + RLS تجريبي + pool reuse ضمن CI PostgreSQL 16** | **اجتازت اختبارات CI الحية على PostgreSQL 16 في Python 3.11 و3.12** |
+| **23** | **signed tenant context لـRLS: HMAC، دالة SECURITY DEFINER، حماية control plane** | **Prototype فقط؛ اختبارات التصميم والـ19 اختبارًا الحي اجتازت CI** |
+| **24** | **واجهات قراءة آمنة لمخطط التحكم: قائمة شركات المستخدم، ملف الشركة الحالية، وعضويته** | **Prototype فقط؛ 78 اختبارًا محليًا، والـ30 اختبار PostgreSQL الحي اجتازت CI لاحقًا** |
 
 ## 4. حالة Stage 21
 
@@ -141,9 +141,9 @@ python -m pip install -r requirements-postgres.txt
 
 ## 9. GitHub والتسليم
 
-- لا يوجد مستودع ERP مستقل حتى الآن؛ الاسم المقترح `HVA09/erp-global-pro`.
+- مستودع ERP المستقل قائم: `HVA09/erp-global-pro`؛ لا تدمج تغييرات Stage25A في `main` قبل المراجعة.
 - لا تضع ERP داخل مستودع AI Chat App أو Lumen.
-- لا تدّعِ رفع GitHub أو النشر قبل التأكد الفعلي.
+- تم التحقق من رفع Commit `6badac0` ونجاح CI. لم يحدث نشر أو اتصال بقاعدة إنتاج.
 - سلّم ZIP كاملًا بعد اجتياز release gate فقط.
 
 ---
@@ -265,3 +265,103 @@ Stage 23 سحبت جميع امتيازات دور التطبيق على `compan
 - لم يُنفذ PostgreSQL migration أو Composite FKs أو RLS شامل.
 
 **الحالة:** Stage 24 prototype لقراءة التحكم فقط. SQLite v8 تظل قاعدة التطبيق، و`TENANT_DATA_SCOPING_ENABLED=False` إلزامية. لا GitHub upload أو production deployment حتى الآن.
+
+
+## 13. Stage 25A — نتائج CI الحية ومراجعة نقطة تكامل التطبيق
+**التاريخ:** 14 نوفمبر 2026  
+**Commit المختبر:** `6badac066a0fdd10ae6bda79f753fee5edae6210`  
+**GitHub Actions run:** [43640872392](https://github.com/HVA09/erp-global-pro/actions/runs/43640872392)  
+**النتيجة:** `success` — جميع المهام الأربع نجحت.
+
+### نتائج المصفوفة
+- Backend tests — Python 3.11: 32 اختبار adapter prototype ناجح، و303 اختبار Backend ناجح (مع تخطي فئتي PostgreSQL في هذا job لأنهما تشغّلان في job منفصل)، و11 اختبار HTTP حقيقي ناجح.
+- Backend tests — Python 3.12: النتائج نفسها؛ 32 + 303 + 11، مع التخطيين المتوقعين في مجموعة Backend العامة.
+- Live PostgreSQL — Python 3.11: **30/30 PASS** على خدمة PostgreSQL 16.
+- Live PostgreSQL — Python 3.12: **30/30 PASS** على خدمة PostgreSQL 16.
+- تتكون المجموعة الحية من 11 اختبار Psycopg/adapter/RLS/pool و19 اختبار signed tenant context وcontrol-plane read routines.
+- Python compileall وJavaScript syntax ورفع artifact الخاص بجرد توافق PostgreSQL اجتازت خطوات CI.
+
+### حدود هذه النتيجة
+- النجاح يثبت prototype وقوالب RLS وقراءات control-plane في بيئة اختبار مؤقتة؛ لا يثبت أن التطبيق الفعلي يستخدم PostgreSQL.
+- `backend/erp/db.py` ما زال يختار `SQLITE_ADAPTER` مباشرة ويشغّل schema/migrations خاصة بـSQLite.
+- `security.load_user()` وواجهات login/companies/switch-company ما زالت تقرأ المستخدمين والأدوار والعضويات من طبقة قاعدة التطبيق الحالية.
+- محول Psycopg 3 وsigned context غير موصولين بـFlask أو دورة الطلب.
+- وظائف Stage24 لا تنشئ جلسة دخول أولية؛ تتطلب سياق شركة موقّعًا صالحًا مسبقًا.
+- SQLite v8 تبقى قاعدة التطبيق الفعلية، و`TENANT_DATA_SCOPING_ENABLED=False`.
+
+### ملاحظات صيانة غير مانعة
+- ظهر ResourceWarning عن stream ملف في اختبار تنزيل مرفق؛ لم يفشل الاختبار. يلزم إصلاح إغلاق stream في fixture/test.
+- ظهرت تحذيرات deprecation من `Flask.__version__` وتبعيات Node المستخدمة في GitHub Actions. لا تمثل إخفاقًا في هذا التشغيل.
+
+## 14. Stage 25A — مراجعة تكامل Flask / JWT / PostgreSQL
+أُجريت مراجعة ساكنة للملفات:
+`backend/erp/__init__.py`, `security.py`, `api/auth.py`, `db.py`, `db_adapters/protocol.py`, `db_adapters/postgres_psycopg.py`, `db_adapters/signed_tenant_context.py`, `postgres_signed_tenant_context.sql`, و`services/tenancy.py`.
+
+النتائج:
+1. Flask يستدعي `security.load_user()` في `before_request`. هذه الدالة تتحقق من JWT ثم تقرأ `users` و`roles` وتعيد التحقق من `company_memberships` عبر DB layer الحالية.
+2. `make_token()` و`/login` و`/companies` و`/switch-company` تعتمد حاليًا على خدمات tenancy وبيانات SQLite.
+3. `db.py` يربط `SQLITE_ADAPTER` مباشرة؛ عقد `DatabaseAdapter` لا يكفي وحده لتشغيل التطبيق على PostgreSQL لأن schema/migrations والمعاملات وبعض SQL وعمليات الملفات والنسخ لا تزال خاصة بـSQLite.
+4. SQL الخاص بـStage23/24 يفترض وجود control-plane tables في PostgreSQL، ويحجب SELECT المباشر على تلك الجداول عن app role. كما أن `tenant_signing_keys` لا يستطيع التطبيق قراءته مباشرة.
+5. إجراءات القراءة في Stage24 مثل `list_my_companies()` تحتاج سياقًا موقّعًا قائمًا؛ لذلك لا تصلح بمفردها لتسجيل الدخول الأولي أو اختيار الشركة قبل وجود السياق.
+6. لا توجد حتى الآن واجهة PostgreSQL ضيقة ومختبرة لتدفق credential verification وتهيئة أول tenant context، ولا آلية مكتملة لتوزيع/تدوير HMAC keys بين خدمة التوقيع ومخزن المفاتيح المحمي في PostgreSQL.
+
+**القرار الوقائي:** لا نربط signer بـFlask ولا نضيف مسارًا هجينًا يقرأ الهوية من SQLite والعضويات من PostgreSQL في هذه الخطوة. ازدواج مصدر الحقيقة أو المزامنة غير الذرية قد ينتج صلاحيات قديمة أو متناقضة.
+
+**Stage 25B:** تم اعتماد PostgreSQL مصدر الحقيقة النهائي والوحيد للمستخدمين والشركات والعضويات والأدوار وبيانات ERP بعد الترحيل الكامل. نُشر قرار معماري وعقد ترحيل في وثيقتي `docs/ERP_STAGE_25B_IDENTITY_SOURCE_OF_TRUTH_AR.md` و`docs/ERP_STAGE_25B_CONTROL_PLANE_MIGRATION_RUNBOOK_AR.md`. لا dual-write؛ SQLite v8 تبقى القاعدة النشطة حتى اجتياز جميع الاختبارات والقطع المخطط.
+
+
+## 15. Stage 25B — قرار مصدر الحقيقة وعقد ترحيل control plane
+**التاريخ:** 14 نوفمبر 2026  
+**القرار:** PostgreSQL هو مصدر الحقيقة النهائي والوحيد للمستخدمين والشركات والعضويات والأدوار وبيانات ERP بعد اكتمال الترحيل والقطع. SQLite v8 تبقى قاعدة التطبيق الوحيدة حاليًا. يمنع dual-write أو تقسيم سلطة الهوية والعضوية بين قاعدتين.
+
+### النموذج المعتمد
+- المستخدم هوية عالمية، ويمكن أن يملك عضويات متعددة.
+- العضوية هي مصدر الدور والصلاحيات الفعلية للشركة المختارة.
+- `users.role` حقل legacy للتوافق/التدقيق فقط؛ لا يستخدم لتفويض عمليات الشركة بعد القطع.
+- `roles` الحالي كتالوج قوالب عالمي؛ العضوية تربط الدور. الأدوار المخصصة لكل شركة لم تُعتمد بعد وتحتاج تصميمًا مستقلًا.
+- بصمات كلمات المرور الحالية scrypt تُنقل حرفيًا بعد اختبارات تحقق؛ لا إعادة ضبط جماعية.
+- البريد يحتفظ بقيمته الأصلية ويُنشأ له canonical value موحد بعد preflight تصادمات.
+
+### تصميم المصادقة
+- التحقق من بيانات الدخول يتم عبر خدمة مصادقة معزولة ذات هوية DB وصلاحيات محدودة، لا عبر دور التطبيق التشغيلي.
+- تحديات ما قبل اختيار الشركة عشوائية وقصيرة العمر؛ تحفظ بصمتها فقط، وتتيح عرض عضويات صاحبها دون قبول user ID حر من العميل.
+- اختيار الشركة يستهلك التحدي ذريًا ويصدر سياقًا موقّعًا قصير العمر؛ JWT التطبيق وسياق PostgreSQL عنصران منفصلان.
+- مفاتيح HMAC في مخطط أمني محمي، ولا يقرأها دور التطبيق أو دور المصادقة مباشرة.
+
+### عقد الترحيل
+- مصدر الترحيل نسخة SQLite v8 متسقة ومستعادة وread-only.
+- Preflight لا يعدّل المصدر، ويكشف التصادمات والعضويات والأدوار المجهولة والحالات غير الصالحة.
+- يتم الاستيراد أولًا إلى staging في PostgreSQL مؤقتة، مع الحفاظ على IDs وFKs وscrypt hashes.
+- تُطابق أعداد الصفوف والبصمات canonical row digests والمراجع والأدوار وحالات العضوية قبل قبول النتيجة.
+- أي تعارض يوقف ETL؛ لا `ON CONFLICT DO NOTHING` لإخفاء السجلات.
+- القطع النهائي مستقبلًا يتم بتجميد الكتابات وأخذ backup نهائي، ثم نقل ومطابقة كاملة وتبديل قاعدة واحدة فقط. الرجوع إلى SQLite مسموح فقط قبل قبول كتابات PostgreSQL جديدة، وإلا يلزم forward recovery.
+
+### الملفات المرجعية
+- `docs/ERP_STAGE_25B_IDENTITY_SOURCE_OF_TRUTH_AR.md`: قرار الهوية والصلاحيات والمصادقة.
+- `docs/ERP_STAGE_25B_CONTROL_PLANE_MIGRATION_RUNBOOK_AR.md`: جداول النقل وpreflight وETL والمطابقة والقطع.
+- `docs/ERP_STAGE_25_APPLICATION_TENANT_CONTEXT_PLAN_AR.md`: مراحل الربط اللاحقة.
+
+### ما لم يحدث
+- لم يُنشأ PostgreSQL schema أو migration تنفيذي بعد.
+- لم تُنقل بيانات أو كلمات مرور إلى أي قاعدة PostgreSQL.
+- لم تُربط خدمة المصادقة أو Flask بـPostgreSQL.
+- لا تغيير لـSQLite v8 أو قاعدة إنتاج أو إعدادات تشغيل.
+- `TENANT_DATA_SCOPING_ENABLED=False` ما زالت إلزامية.
+
+**الحالة التنفيذية:** أضيف `backend/scripts/control_plane_preflight.py` لقراءة SQLite v8 دون تعديل، مع 11 اختبارًا مركزًا على كل من Python 3.11 و3.12. شملت الاختبارات بناء `schema.sql` الفعلي وتشغيل ترحيلات SQLite حتى v8 باستخدام بيانات اصطناعية. اجتاز التشغيل CI رقم `43643939785` في المهام الأربع.
+
+**نقطة الاستئناف:** تشغيل preflight على نسخة SQLite v8 حقيقية ومستعادة في بيئة المستخدم ومراجعة التقرير، ثم بناء control-plane schema ومشغل migration تجريبي على PostgreSQL 16 disposable مع اختبارات rollback وreconciliation.
+
+
+## 16. Stage25B — نتيجة التحقق من أداة preflight
+- **GitHub Actions:** [43643939785](https://github.com/HVA09/erp-global-pro/actions/runs/43643939785) — `success`, 4/4 jobs.
+- **Python 3.11 و3.12:** 11/11 اختبارًا مركزًا لأداة preflight في كل إصدار.
+- الاختبار الفعلي الإضافي أنشأ قاعدة من `backend/erp/schema.sql` ثم نفذ `apply_migrations` حتى SQLite v8 قبل تشغيل preflight ببيانات اصطناعية؛ اجتاز في الإصدارين.
+- Full backend suite: **314 tests PASS** لكل إصدار، مع تخطي فئتي PostgreSQL في المجموعة العامة لأنها تعمل في job منفصل.
+- Live PostgreSQL 16: **30/30 PASS** في كل إصدار Python.
+- HTTP integration: 11/11 PASS في كل إصدار.
+- Python compileall وJavaScript syntax: PASS.
+
+**الحد:** الاختبارات تستخدم بيانات اصطناعية. لم تُشغّل الأداة بعد على نسخة قاعدة مستخدم حقيقية؛ لا توجد نسخة SQLite v8 فعلية مقدمة للتشغيل في هذه الجلسة. لذلك لا يوجد تقرير جاهزية ETL لبيانات ERP الفعلية بعد.
+
+مرجع التقرير: `ERP_GLOBAL_PRO_STAGE25B_PREFLIGHT_VALIDATION.txt`.

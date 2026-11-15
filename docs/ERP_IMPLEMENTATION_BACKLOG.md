@@ -57,7 +57,7 @@ The backlog is ordered to prevent unsafe partial multi-tenancy. A phase is not c
 ## EPIC 5 — PostgreSQL and production hardening
 
 - [x] Add isolated Psycopg 3 adapter prototype and SQLite DB adapter contract (not wired into app).
-- [x] Add PostgreSQL disposable CI job and live adapter/RLS/pool tests (Stage 22; execution still pending first GitHub Actions run).
+- [x] Add PostgreSQL disposable CI job and live adapter/RLS/pool tests (Stage 22; 30/30 live tests passed on PostgreSQL 16 in Python 3.11 and 3.12 during CI run 43640872392).
 - [ ] Wire PostgreSQL adapter into application only after live driver tests pass.
 - [ ] Add PostgreSQL migration and verified data-transfer tooling.
 - [ ] Add tenant-aware composite foreign keys and enable RLS on every tenant-owned table.
@@ -153,3 +153,37 @@ The backlog is ordered to prevent unsafe partial multi-tenancy. A phase is not c
 - [ ] Build PostgreSQL schema/migrations and composite FKs after live driver integration is green.
 - [ ] Design a trustworthy tenant context boundary; a user-settable custom GUC alone is not a standalone defense against SQL injection.
 - [ ] Keep `TENANT_DATA_SCOPING_ENABLED=False` until all database, HTTP, UI, files and backup release gates pass.
+
+
+## Stage 25A — CI evidence and application integration boundary
+- [x] Run and inspect GitHub Actions on commit `6badac066a0fdd10ae6bda79f753fee5edae6210`.
+- [x] Pass the 30-test live PostgreSQL suite on PostgreSQL 16 under Python 3.11 and 3.12 (11 adapter/RLS/pool tests + 19 signed-context/control-plane tests per matrix job).
+- [x] Pass the full Backend suite (303 tests per Python version; two PostgreSQL test classes are intentionally skipped here and run in the dedicated live-PG job).
+- [x] Pass real Flask HTTP integration tests (11 per Python version), adapter spike tests (32 per Python version), Python compilation and frontend JavaScript syntax checks.
+- [x] Audit Flask/JWT, SQLite DB access, Psycopg prototype, signed-context signer and Stage24 SQL routine boundaries.
+- [x] Document why Stage24 read routines cannot serve as login/bootstrap and why a split SQLite-auth/PostgreSQL-membership source of truth is unsafe without an explicit consistency protocol.
+- [x] Decide and document PostgreSQL as the single authoritative source of truth for users, companies, memberships, roles and ERP operational data after the full migration/cutover; retain SQLite v8 as the only active backend until then.
+- [x] Specify an isolated authentication-service boundary, restricted auth principal, short-lived pre-company challenge and database-issued signed tenant context; implementation remains pending.
+- [x] Specify HMAC key ownership, restricted security schema, key IDs and rotation requirements; provisioning/rotation implementation remains pending.
+- [ ] Extend the adapter/request transaction contract for a pooled PostgreSQL connection and transaction-local signed tenant context; prove context cleanup on success, exception, rollback and pool reuse.
+- [ ] Build a disposable end-to-end test flow: login proof → company selection → signed claims → PostgreSQL transaction context → RLS-scoped query.
+- [ ] Add expiry, replay/revocation, revoked membership, suspended company, tampering, forged GUC and cross-company IDOR negative tests.
+- [x] Preserve SQLite v8 as the only active backend and keep `TENANT_DATA_SCOPING_ENABLED=False` in the Stage25B design and runbook.
+
+
+## Stage 25B — Identity source of truth and control-plane migration contract
+- [x] Decide PostgreSQL as the final single source of truth after a complete verified cutover; no dual-write or split authority.
+- [x] Define global user identity and membership-scoped effective role/permissions.
+- [x] Deprecate `users.role` as legacy metadata for authorization; retain it only during a compatibility period.
+- [x] Record that the existing role catalog is global and company-custom roles require a separately approved schema/authorization extension.
+- [x] Define scrypt hash preservation, email canonicalization preflight, ID preservation, timestamp handling and JSONB permission validation.
+- [x] Specify isolated authentication-service boundary, restricted auth principal, short-lived pre-company challenge and signed-context issuance requirements.
+- [x] Specify control-plane ETL source, staging import, deterministic reconciliation, sequence reset, retry/rebuild, rollback and final cutover controls.
+- [x] Implement read-only SQLite v8 control-plane preflight and focused tests; 11 focused tests passed on Python 3.11/3.12, including actual schema.sql + SQLite v8 migrations with synthetic data (CI run 43643939785).
+- [ ] Create versioned PostgreSQL control-plane schema and migration ledger on disposable PostgreSQL 16 only.
+- [ ] Implement repeatable ETL for roles, users, companies and company_memberships preserving IDs and password hashes.
+- [ ] Add exact row-count, canonical digest, unique/FK and permission mapping reconciliation tests.
+- [ ] Add synthetic scrypt verification and invalid-hash handling tests; never log hashes or plaintext credentials.
+- [ ] Rehearse interrupted migration, transaction rollback and full rebuild from a clean disposable target.
+- [ ] Keep the PostgreSQL control plane disconnected from Flask until Stage25C/25D authentication and transaction-context tests pass.
+- [ ] Keep SQLite v8 as active backend and `TENANT_DATA_SCOPING_ENABLED=False` until every release gate passes.
