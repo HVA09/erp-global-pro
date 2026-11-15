@@ -176,7 +176,7 @@ def build_report(
                 "table_counts": table_counts,
                 "missing_tables": missing_tables,
                 "missing_columns": missing_columns,
-                "summary": {"blocker_count": len(blockers), "warning_count": 0, "ready_for_import": False},
+                "summary": {"blocker_count": len(blockers), "warning_count": len(warnings), "ready_for_control_plane_import": False},
                 "blockers": blockers,
                 "warnings": warnings,
                 "details": details,
