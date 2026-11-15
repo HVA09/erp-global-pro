@@ -1,10 +1,10 @@
 # ERP Global Pro — سجل الاستمرارية الرئيسي
 
-**آخر تحديث:** 15 نوفمبر 2026 — Stage 25B merged؛ أداة preflight read-only واختبار Regression وعقد الترحيل موثّقة في main.
+**آخر تحديث:** 15 نوفمبر 2026 — Stage 25B merged، ودليل Stage 25C للنسخة المحلية وPreflight مدمج في main عبر PR #10.
 **آخر مخطط:** SQLite v8؛ لا تغيير في قاعدة التطبيق النشطة.
 **آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip` (أرشيف الأساس الأصلي محفوظ دون تعديل).
-**نقطة الاستئناف التالية:** Stage 25C — الحصول على نسخة SQLite v8 مستعادة وغير متصلة، تشغيل preflight ومراجعة blockers/warnings، ثم إنشاء control-plane schema وETL تجريبي على PostgreSQL 16 disposable مع reconciliation وrollback؛ لا ربط للتطبيق قبل إثبات السلامة.
-**حالة GitHub:** المستودع `HVA09/erp-global-pro`؛ `main` عند `d755aeca7e8dfbdc7180c5859588e1e55d58b457`. دُمج Stage 25B (#5) في `5d1d19838a27a4db5b4d3cbaabb256b354da877e`، ثم دُمج سجل الحوكمة المحدّث في `aad690c6025b9de60d8251ddf1babfeda31543d5`، وتبعه تصحيح سجل الحوكمة الخاص بحماية `main` في `d755aeca7e8dfbdc7180c5859588e1e55d58b457`. اكتملت فحوص Stage 25B بعد الدمج 4/4 بنجاح في CI run [43665874804](https://github.com/HVA09/erp-global-pro/actions/runs/43665874804).
+**نقطة الاستئناف التالية:** اتبع `docs/ERP_STAGE_25C_OFFLINE_PREFLIGHT_RUNBOOK_AR.md` لإنشاء نسخة SQLite v8 محلية مستقلة والتحقق منها، ثم تشغيل preflight ومراجعة blockers/warnings. بعد اعتماد التقرير فقط، أنشئ control-plane schema وETL تجريبياً على PostgreSQL 16 disposable مع reconciliation وrollback؛ لا ربط للتطبيق قبل إثبات السلامة.
+**حالة GitHub:** المستودع `HVA09/erp-global-pro`؛ `main` عند `2c1a4d1d7e00076fd0d4fc08c6aeb43c74e1bc26`. PR #5 (Stage 25B) مدمج؛ PR #10 (دليل Stage 25C) مدمج عند `2c1a4d1d7e00076fd0d4fc08c6aeb43c74e1bc26` وفحوصه قبل الدمج 4/4 ناجحة في [run 43743727556](https://github.com/HVA09/erp-global-pro/actions/runs/43743727556). فحوص ما بعد الدمج على main في [run 43743932059](https://github.com/HVA09/erp-global-pro/actions/runs/43743932059) كانت قيد التنفيذ عند آخر تحديث.
 **حماية main:** أفاد مالك المستودع بأنه فعّل حماية الفرع. لم أغيّر إعدادات الحماية. واجهة التكامل لا تسمح لي بقراءة تفاصيل Branch Protection (403)؛ لا يُعد ذلك دليلاً على أن الحماية معطّلة.
 **حالة تعدد الشركات:** حاجز التشغيل مغلق؛ `TENANT_DATA_SCOPING_ENABLED=False`.
 **الترحيل:** لم يُنفذ preflight على قاعدة مستخدمين فعلية مستعادة بعد؛ لم تتوفر نسخة SQLite في مساحة العمل الحالية. لا ترحيل أو dual-write أو تعديل إنتاجي.
