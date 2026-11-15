@@ -287,6 +287,20 @@ class ControlPlanePreflightTests(unittest.TestCase):
         self.assertFalse(parsed["summary"]["ready_for_control_plane_import"])
         self.assertNotIn(valid_hash(), output.read_text(encoding="utf-8"))
 
+    def test_missing_required_table_uses_stable_readiness_key(self):
+        conn = self._connect()
+        conn.execute("DROP TABLE company_memberships")
+        conn.commit()
+        conn.close()
+
+        report = PREFLIGHT.build_report(self.db_path)
+        self.assertFalse(report["summary"]["ready_for_control_plane_import"])
+        self.assertNotIn("ready_for_import", report["summary"])
+        self.assertIn(
+            "missing_required_tables",
+            [item["code"] for item in report["blockers"]],
+        )
+
     def test_symlink_database_path_is_rejected(self):
         link = Path(self.temp.name) / "source-link.sqlite3"
         link.symlink_to(self.db_path)
