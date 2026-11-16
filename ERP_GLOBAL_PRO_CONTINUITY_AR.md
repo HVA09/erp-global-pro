@@ -1,15 +1,15 @@
 # ERP Global Pro — سجل الاستمرارية الرئيسي
 
-**آخر تحديث:** 15 نوفمبر 2026 — Stage 25B merged، ودليل Stage 25C للنسخة المحلية وPreflight مدمج في main عبر PR #10.
+**آخر تحديث:** 16 نوفمبر 2026 — Stage 25C runbook مدمج؛ آخر تحديث للحكومة PR #12 مدمج في main.
 **آخر مخطط:** SQLite v8؛ لا تغيير في قاعدة التطبيق النشطة.
 **آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip` (أرشيف الأساس الأصلي محفوظ دون تعديل).
 **نقطة الاستئناف التالية:** اتبع `docs/ERP_STAGE_25C_OFFLINE_PREFLIGHT_RUNBOOK_AR.md` لإنشاء نسخة SQLite v8 محلية مستقلة والتحقق منها، ثم تشغيل preflight ومراجعة blockers/warnings. بعد اعتماد التقرير فقط، أنشئ control-plane schema وETL تجريبياً على PostgreSQL 16 disposable مع reconciliation وrollback؛ لا ربط للتطبيق قبل إثبات السلامة.
-**حالة GitHub:** المستودع `HVA09/erp-global-pro`؛ `main` عند `2c1a4d1d7e00076fd0d4fc08c6aeb43c74e1bc26`. PR #5 (Stage 25B) مدمج؛ PR #10 (دليل Stage 25C) مدمج عند `2c1a4d1d7e00076fd0d4fc08c6aeb43c74e1bc26` وفحوصه قبل الدمج 4/4 ناجحة في [run 43743727556](https://github.com/HVA09/erp-global-pro/actions/runs/43743727556). فحوص ما بعد الدمج على main في [run 43743932059](https://github.com/HVA09/erp-global-pro/actions/runs/43743932059) كانت قيد التنفيذ عند آخر تحديث.
+**حالة GitHub:** المستودع `HVA09/erp-global-pro`؛ `main` عند `67d16f05f7962785d486512f4873b7c49ed249b5` بعد PR #12. PR #5 (Stage 25B) مدمج؛ PR #10 (دليل Stage 25C) مدمج عند `2c1a4d1d7e00076fd0d4fc08c6aeb43c74e1bc26` وفحوصه قبل الدمج 4/4 ناجحة في [run 43743727556](https://github.com/HVA09/erp-global-pro/actions/runs/43743727556). فحوص ما بعد الدمج على main في [run 43743932059](https://github.com/HVA09/erp-global-pro/actions/runs/43743932059) كانت قيد التنفيذ عند آخر تحديث.
 **حماية main:** أفاد مالك المستودع بأنه فعّل حماية الفرع. لم أغيّر إعدادات الحماية. واجهة التكامل لا تسمح لي بقراءة تفاصيل Branch Protection (403)؛ لا يُعد ذلك دليلاً على أن الحماية معطّلة.
 **حالة تعدد الشركات:** حاجز التشغيل مغلق؛ `TENANT_DATA_SCOPING_ENABLED=False`.
 **الترحيل:** لم يُنفذ preflight على قاعدة مستخدمين فعلية مستعادة بعد؛ لم تتوفر نسخة SQLite في مساحة العمل الحالية. لا ترحيل أو dual-write أو تعديل إنتاجي.
 
-اقرأ هذا الملف أولًا عند فتح محادثة جديدة، ثم وثائق Stage 19–25B. هذا السجل يصف ما ثبت وجوده وما تم اختباره، ولا يحل محل فحص الكود.
+اقرأ هذا الملف أولًا عند فتح محادثة جديدة، ثم دليل Stage 25C ووثائق Stage 19–25B. هذا السجل يصف ما ثبت وجوده وما تم اختباره، ولا يحل محل فحص الكود.
 
 ## 1. هوية المشروع والحدود
 
@@ -367,3 +367,13 @@ Stage 23 سحبت جميع امتيازات دور التطبيق على `compan
 **الحد:** الاختبارات تستخدم بيانات اصطناعية. لم تُشغّل الأداة بعد على نسخة قاعدة مستخدم حقيقية؛ لا توجد نسخة SQLite v8 فعلية مقدمة للتشغيل في هذه الجلسة. لذلك لا يوجد تقرير جاهزية ETL لبيانات ERP الفعلية بعد.
 
 مرجع التقرير: `ERP_GLOBAL_PRO_STAGE25B_PREFLIGHT_VALIDATION.txt`.
+
+
+## آخر نقطة تحقق — 16 نوفمبر 2026
+
+- GitHub يؤكد أن PR #12 — تحديث سجل الحوكمة بعد Stage 25C — مدمج في `main` عند `67d16f05f7962785d486512f4873b7c49ed249b5`.
+- تمت مقارنة هذا الالتزام مع `main` وكانت النتيجة `identical`.
+- لا يزال التنفيذ المتبقي لStage 25C محلياً: إنشاء نسخة مستقلة ومتسقة من SQLite v8 عبر Backup API، والتحقق من `integrity_check` و`foreign_key_check` وSHA-256، ثم تشغيل Preflight بوضع القراءة فقط.
+- لا ترسل قاعدة البيانات أو ملفات WAL/SHM أو تقريراً غير منقح إلى GitHub أو ChatGPT؛ شارك ملخص blockers/warnings منقحاً فقط.
+- بعد مراجعة التقرير الفعلي فقط يمكن الانتقال إلى ETL تجريبي على PostgreSQL 16 disposable مع reconciliation وrollback؛ لا يبدأ قبل ذلك.
+- لا يوجد دليل على PostgreSQL cutover أو dual-write أو تفعيل multi-company. يبقى `TENANT_DATA_SCOPING_ENABLED=False`.
