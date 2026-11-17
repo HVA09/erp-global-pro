@@ -1,6 +1,6 @@
 # ERP Global Pro — سجل الاستمرارية الرئيسي
 
-**آخر تحديث:** 17 نوفمبر 2026 — Stage 25C runbook مدمج؛ آخر تحديث للحكومة PR #12 مدمج في main.
+**آخر تحديث:** 17 نوفمبر 2026 — Stage 25C runbook مدمج؛ مزامنة نقطة الاستئناف وبوابات Stage 25C في PR #13 مدمجة في main.
 **آخر مخطط:** SQLite v8؛ لا تغيير في قاعدة التطبيق النشطة.
 **آخر حزمة:** `erp-global-pro-stage24-control-plane-read-routines.zip` (أرشيف الأساس الأصلي محفوظ دون تعديل).
 **نقطة الاستئناف التالية:** اتبع `docs/ERP_STAGE_25C_OFFLINE_PREFLIGHT_RUNBOOK_AR.md` لإنشاء نسخة SQLite v8 محلية مستقلة والتحقق منها، ثم تشغيل preflight ومراجعة blockers/warnings. بعد اعتماد التقرير فقط، أنشئ control-plane schema وETL تجريبياً على PostgreSQL 16 disposable مع reconciliation وrollback؛ لا ربط للتطبيق قبل إثبات السلامة.
