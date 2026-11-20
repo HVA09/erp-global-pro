@@ -1,6 +1,8 @@
 # ERP Global Pro — نظام ERP متكامل
 
-> **نقطة الحالة المعتمدة — 17 نوفمبر 2026:** رأس `main` هو `7bb01d23328a68aae67c659fd6c32b6db033637d` بعد دمج PR #13 (مزامنة نقطة الاستئناف وبوابات Stage 25C). التطبيق ما زال **Flask + SQLite v8**؛ PostgreSQL هو اتجاه مستقبلي بعد cutover موثق، وليس قاعدة التطبيق الحالية. دليل Stage 25C للنسخة المحلية وفحص Preflight للقراءة فقط مدمج، لكن تشغيله على نسخة SQLite v8 فعلية مستعادة لم يُثبت بعد. يجب أن يبقى `TENANT_DATA_SCOPING_ENABLED=False`؛ لا multi-company production، ولا dual-write، ولا ربط Flask بـPostgreSQL، ولا cutover.
+> **نقطة تحقق حية — 20 نوفمبر 2026:** رأس `main` المرصود هو `577c105d81bd7b7c926965c0ed7c94379c1cb695` بعد مزامنة التوثيق في PR #14. التطبيق ما زال Flask + SQLite v8. دليل Stage25C وPreflight للقراءة فقط موجود، لكن تشغيله على نسخة SQLite v8 فعلية مستعادة لم يثبت بعد. يجب إبقاء `TENANT_DATA_SCOPING_ENABLED=False`؛ لا تفعيل تعدد الشركات في الإنتاج، ولا dual-write أو PostgreSQL cutover أو ترحيل بيانات حية. الفقرة المؤرخة 17 نوفمبر أدناه محفوظة كسجل تاريخي فقط.
+
+> **نقطة حالة تاريخية — 17 نوفمبر 2026:** رأس `main` هو `7bb01d23328a68aae67c659fd6c32b6db033637d` بعد دمج PR #13 (مزامنة نقطة الاستئناف وبوابات Stage 25C). التطبيق ما زال **Flask + SQLite v8**؛ PostgreSQL هو اتجاه مستقبلي بعد cutover موثق، وليس قاعدة التطبيق الحالية. دليل Stage 25C للنسخة المحلية وفحص Preflight للقراءة فقط مدمج، لكن تشغيله على نسخة SQLite v8 فعلية مستعادة لم يُثبت بعد. يجب أن يبقى `TENANT_DATA_SCOPING_ENABLED=False`؛ لا multi-company production، ولا dual-write، ولا ربط Flask بـPostgreSQL، ولا cutover.
 
 باك إند **Flask + SQLite** وواجهة **JavaScript خالصة** (بدون npm أو أي خطوة بناء). عربي/إنجليزي مع دعم RTL ووضع داكن.
 
